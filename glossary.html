@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>名詞解釋｜鐵路號誌連鎖</title>
+<meta name="description" content="鐵路號誌與連鎖常用術語，含中英對照與即時搜尋。">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div style="--lamp:var(--lunar)">
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="鐵路號誌連鎖 首頁">
+      <span class="brand-head" aria-hidden="true"><i class="on-r"></i><i></i><i></i></span>
+      <span>鐵路號誌連鎖<small>RAILWAY INTERLOCKING</small></span>
+    </a>
+    <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="site-nav">選單</button>
+    <nav class="nav" id="site-nav" aria-label="主要導覽">
+        <a href="index.html">首頁</a>
+        <a href="equipment.html">現場設備</a>
+        <a href="inspection.html">施工與檢查</a>
+        <a href="glossary.html" aria-current="page">名詞解釋</a>
+    </nav>
+  </div>
+</header>
+<main>
+<style>
+.g-tools { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 61px); z-index: 5; background: var(--bg); padding-block: 16px; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.g-search { display: flex; gap: 12px; align-items: center; }
+.g-search input { flex: 1; min-width: 0; font: inherit; font-size: 16px; color: var(--fg); background: var(--panel); border: 1px solid var(--line-2); border-radius: var(--radius); padding: 11px 14px; }
+.g-search input:focus { outline: none; border-color: var(--lunar); }
+.g-search span { font-size: 14px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font: inherit; font-size: 14px; color: var(--muted); background: transparent; border: 1px solid var(--line-2); border-radius: 999px; padding: 4px 14px; cursor: pointer; }
+.chip:hover { color: var(--fg); }
+.chip[aria-pressed="true"] { color: var(--bg); background: var(--lunar); border-color: var(--lunar); }
+.g-group { padding-block: 32px 8px; }
+.g-group h2 { font-size: 15px; font-family: var(--font-label); font-weight: 600; letter-spacing: .16em; color: var(--muted); margin-bottom: 8px; display: flex; gap: 10px; align-items: baseline; }
+.g-group h2 b { font-family: var(--font-body); font-size: 22px; color: var(--fg); letter-spacing: .02em; }
+dl.terms { margin: 0; }
+.term { display: grid; grid-template-columns: minmax(180px, 260px) minmax(0, 1fr); gap: 8px 32px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.term dt { min-width: 0; }
+.term dt b { font-size: 18px; display: block; }
+.term dt i { font-style: normal; font-family: var(--font-label); font-weight: 500; font-size: 15px; letter-spacing: .04em; color: var(--muted); }
+.term dd { margin: 0; color: var(--muted); max-width: 46em; min-width: 0; }
+.term dd mark { background: rgba(223,233,242,.18); color: var(--fg); border-radius: 2px; padding: 0 1px; }
+.term dt mark { background: rgba(223,233,242,.18); color: inherit; }
+@media (max-width: 640px) { .term { grid-template-columns: minmax(0, 1fr); } }
+.g-empty { padding: 40px 0; color: var(--muted); }
+</style>
+
+<header class="page-head">
+  <div class="wrap">
+    <div class="eyebrow">GLOSSARY</div>
+    <h1>名詞解釋</h1>
+    <p class="lede">號誌與連鎖工程常用術語，附英文對照。規範文件中「聯鎖」與「連鎖」兩種寫法都會出現，意思相同。</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="g-tools">
+    <div class="g-search"><input id="gq" type="search" placeholder="搜尋名詞、英文或說明內容" aria-label="搜尋名詞" autocomplete="off"><span id="gcount"></span></div>
+    <div class="chips" id="chips" role="group" aria-label="依分類篩選"></div>
+  </div>
+  <div id="glist"></div>
+  <p class="g-empty" id="gempty" hidden>找不到符合的名詞。換個關鍵字，或改選「全部」。</p>
+</div>
+
+<script>
+(function () {
+  var CAT = [['sig', '號誌', 'SIGNALS'], ['ilk', '連鎖與鎖閉', 'INTERLOCKING'], ['det', '列車偵測', 'TRAIN DETECTION'], ['pt', '轉轍器', 'POINTS'], ['lx', '平交道', 'LEVEL CROSSING'], ['sys', '系統與控制', 'SYSTEMS'], ['qc', '施工品管', 'QUALITY CONTROL']];
+  var G = [
+    ['sig', '號誌機', 'Signal', '以燈色組合向司機指示可否進入前方區間及運轉條件的設備，是連鎖裝置的輸出端。'],
+    ['sig', '現示', 'Aspect', '號誌機某一時刻顯示的燈色組合所代表的意義，例如進行、減速、注意、警戒、停止。'],
+    ['sig', '進站號誌機', 'Home Signal', '設於車站入口，防護站內進路，並指示列車進入的股道。'],
+    ['sig', '出發號誌機', 'Starting Signal', '設於股道出站端，防護出站進路與前方閉塞區間。'],
+    ['sig', '閉塞號誌機', 'Block Signal', '設於站間閉塞區間入口；自動閉塞區間依前方列車位置自動變換現示。'],
+    ['sig', '遠方號誌機', 'Distant Signal', '設於主號誌機外方，預告主號誌機的現示，讓司機提早準備減速或停車。'],
+    ['sig', '中繼號誌機', 'Repeater Signal', '主號誌機視認距離不足時，於其外方重複顯示主號誌狀態。'],
+    ['sig', '調車號誌機', 'Shunt Signal', '指示站內或調車場調車進路的號誌機，不用於正線列車運轉。'],
+    ['sig', '進路表示器', 'Route Indicator', '附掛於主號誌機，表示已開通的進路方向或股道。'],
+    ['sig', '視認距離', 'Sighting Distance', '司機能清楚確認號誌現示的距離，須足以讓列車在號誌機前停妥或減速。'],
+    ['sig', '燈絲斷線檢知', 'Lamp Proving', '檢知號誌燈（燈泡或 LED）是否實際點亮；停止燈故障時外方號誌須保持停止。'],
+
+    ['ilk', '連鎖（聯鎖）', 'Interlocking', '使號誌機、轉轍器、軌道區段之間依邏輯條件互相牽制，確保列車進路安全的裝置或功能。'],
+    ['ilk', '進路', 'Route', '列車從一架號誌機行駛到下一架號誌機（或目的地）所經過的路徑，包含其中的轉轍器與軌道區段。'],
+    ['ilk', '排列進路', 'Route Setting', '操作者指定進路後，連鎖裝置轉換所需轉轍器、檢查條件並鎖閉進路的過程。'],
+    ['ilk', '敵對進路', 'Conflicting Route', '與某進路同時建立會造成衝突的進路，例如對向進入同一股道、交叉或共用轉轍器方向相反。'],
+    ['ilk', '側面防護', 'Flank Protection', '以轉轍器轉向安全方向或保持相關號誌停止，阻止其他車輛從側方駛入已建立的進路。'],
+    ['ilk', '過走餘裕', 'Overlap', '號誌機（停車點）前方一段額外保留的距離，防止列車停車不及越過時進入有衝突的路線。'],
+    ['ilk', '連鎖表', 'Interlocking Table / Control Table', '列出每條進路所需的轉轍器位置、檢查區段、敵對進路與鎖閉條件的表格，是連鎖設計與測試的依據。'],
+    ['ilk', '進路鎖閉', 'Route Locking', '號誌開放後鎖住進路內轉轍器，直到列車通過或進路合法解除為止。'],
+    ['ilk', '接近鎖閉', 'Approach Locking', '號誌開放且列車已在接近區段時，取消進路須經延時才能解鎖，防止司機來不及停車時進路被改變。'],
+    ['ilk', '保留鎖閉', 'Stick Locking', '號誌開放但接近區段無車時的鎖閉，取消進路後可立即解除。'],
+    ['ilk', '分段解鎖', 'Sectional Route Release', '列車通過進路內各區段後逐段解除鎖閉，讓後方轉轍器提早可供其他進路使用。'],
+    ['ilk', '延時解鎖（時素）', 'Time Release', '以計時方式在一段時間後才解除鎖閉，常用於接近鎖閉或過走餘裕的解除。'],
+    ['ilk', '號誌自動復歸', 'Signal Replacement', '號誌開放後，進路內區段一旦被佔用，號誌自動恢復停止。'],
+    ['ilk', '故障安全', 'Fail-safe', '設備故障時必然偏向安全狀態的設計原則，例如失電時號誌顯示停止、區段判定為佔用。'],
+
+    ['det', '軌道電路', 'Track Circuit', '以兩根鋼軌作為導體，列車車軸使電路短路（分路）而檢知列車佔用的方式，也能檢知部分斷軌。'],
+    ['det', '軌道區段', 'Track Section', '列車偵測的最小單位，以絕緣接頭或計軸點分界，命名如 1T、21T。'],
+    ['det', '分路', 'Shunt', '列車車軸在兩根鋼軌間形成低電阻通路，使軌道電路繼電器落下。軌面鏽蝕會造成分路不良。'],
+    ['det', '絕緣接頭', 'Insulated Rail Joint', '在鋼軌間加入絕緣材料，把軌道電路分隔成不同區段。'],
+    ['det', '計軸器', 'Axle Counter', '在區段兩端計算駛入與駛出的車軸數，兩者相等時判定區段無車。'],
+    ['det', '計軸點', 'Counting Head / Detection Point', '裝在鋼軌上的感測頭，通常有兩組相錯位置的感測器，可判斷車輪通過方向。'],
+    ['det', '計軸評估器', 'Evaluator', '室內處理單元，比較各計軸點計數並輸出區段佔用／無車狀態。'],
+    ['det', '預備復位', 'Preparatory Reset', '計軸區段受干擾後，須等一列車完整通過且計數一致才恢復無車的復位方式。'],
+    ['det', '直接復位', 'Direct Reset', '經人員確認區段確實無車後直接復位，須依程序授權並留下紀錄。'],
+
+    ['pt', '轉轍器', 'Points / Switch', '讓列車從一條路線轉往另一條路線的軌道設備，由尖軌、基本軌等組成。'],
+    ['pt', '電動轉轍器', 'Point Machine', '以電動機驅動尖軌轉換、鎖錠並回報位置的設備。'],
+    ['pt', '定位／反位', 'Normal / Reverse', '轉轍器平常開通的方向稱定位，另一方向稱反位。'],
+    ['pt', '尖軌', 'Switch Blade', '轉轍器中可移動、尖端削薄的鋼軌，靠向基本軌以導引車輪。'],
+    ['pt', '密貼', 'Blade Adherence', '尖軌與基本軌確實貼合。密貼不良時列車可能衝撞尖軌而出軌。'],
+    ['pt', '密貼檢知', 'Point Detection', '確認尖軌已密貼並鎖錠的檢知功能，是號誌開放的必要條件。'],
+    ['pt', '表示', 'Indication', '轉轍器回報給連鎖的定位或反位狀態；轉換中或密貼不良時沒有表示。'],
+    ['pt', '動作桿', 'Throw Rod', '把轉轍機內的直線運動傳給尖軌的桿件。'],
+    ['pt', '鎖錠桿', 'Lock Rod', '隨尖軌移動、到位後讓鎖塊插入以機械鎖住尖軌的桿件。'],
+    ['pt', '表示桿', 'Detection Rod', '獨立檢知尖軌實際位置並驅動表示接點的桿件。'],
+    ['pt', '尖軌鎖定器', 'Point Clamp', '以機械方式固定尖軌的器具，用於施工或轉轍器故障時。'],
+
+    ['lx', '平交道', 'Level Crossing', '鐵路與道路在同一平面交會的地點。'],
+    ['lx', '遮斷機', 'Barrier Machine', '列車接近時放下遮斷桿阻擋道路交通的設備，停電時遮斷桿可依重力下降。'],
+    ['lx', '起動點／終止點', 'Strike-in / Strike-out Point', '列車越過起動點時平交道開始警報；越過終止點後警報停止、遮斷桿上升。'],
+    ['lx', '警報時間', 'Warning Time', '警報開始到列車抵達平交道的時間，依線路最高速度設定起動點位置以確保不低於法定值。'],
+    ['lx', '障礙物偵測', 'Obstacle Detection', '以紅外線或雷達偵測遮斷後仍留在平交道內的車輛，並通知接近列車停車。'],
+    ['lx', '列車方向指示器', 'Train Direction Indicator', '顯示列車接近方向的指示燈，大型為資訊可變式。'],
+
+    ['sys', '繼電連鎖', 'Relay Interlocking', '以安全型繼電器電路實現連鎖邏輯的系統。'],
+    ['sys', '電子連鎖', 'Computer-based Interlocking', '以電腦軟體與連鎖資料實現連鎖邏輯的系統，具冗餘架構與事件紀錄。'],
+    ['sys', '2 取 2／3 取 2', '2oo2 / 2oo3', '電子連鎖常見的冗餘表決架構：兩套結果一致才輸出，或三套中兩套一致即輸出。'],
+    ['sys', '閉塞', 'Block', '把路線分成若干區間，同一時間每個區間只允許一列列車進入的運轉方式。'],
+    ['sys', '自動閉塞', 'Automatic Block Signalling', '由列車偵測自動控制站間閉塞號誌現示的閉塞方式。'],
+    ['sys', 'CTC 中央行車控制', 'Centralized Traffic Control', '由控制中心遠端排列進路、監視全線列車位置與設備狀態的系統。'],
+    ['sys', 'ATP 列車自動防護', 'Automatic Train Protection', '依號誌資訊監督列車速度，超速或冒進停止號誌時自動煞車的系統。'],
+    ['sys', '運轉紀錄器', 'Event Recorder', '記錄連鎖操作、設備狀態與故障事件的裝置，用於事故調查與維修分析。'],
+
+    ['qc', '自主檢查', 'Self-inspection', '施工廠商依自主檢查表，於施工前、中、後自行檢查並記錄的品管作業。'],
+    ['qc', '檢驗停留點（★）', 'Hold Point', '必須自主檢查合格並經監造檢驗合格後，才能進行下一道工序的檢查項目。'],
+    ['qc', '安衛查驗點（※）', 'Safety Check Point', '須同時檢查安全衛生措施的項目，例如吊裝證照、現場清理。'],
+    ['qc', '監造', 'Supervision', '由業主委託的監造單位，負責審查施工計畫、執行停留點檢驗與品質稽核。'],
+    ['qc', '不合格追蹤管制表', 'Non-conformance Report', '記錄缺失、改善期限與複查結果的表單，直到缺失結案。'],
+    ['qc', '一機三證', 'Crane Certificates', '吊裝作業須具備的機具檢查合格證、操作人員證照、吊掛作業人員證照等文件。'],
+    ['qc', '接地電阻', 'Earthing Resistance', '設備接地極與大地間的電阻值，須量測確認低於規定值並記錄。'],
+    ['qc', '絕緣電阻', 'Insulation Resistance', '電纜芯線間或芯線對地的電阻，以高阻計量測，用於確認纜線未受損。'],
+    ['qc', '建築界限', 'Structure Gauge', '軌道周圍不得有任何結構物侵入的空間範圍，軌旁設備安裝距離依此訂定。']
+  ];
+  var $ = function (id) { return document.getElementById(id); };
+  var cur = '';
+  var chips = $('chips');
+  [['', '全部']].concat(CAT).forEach(function (c) {
+    var b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = c[1];
+    b.setAttribute('aria-pressed', c[0] === cur);
+    b.addEventListener('click', function () { cur = c[0]; [].forEach.call(chips.children, function (x) { x.setAttribute('aria-pressed', x === b); }); draw(); });
+    chips.appendChild(b);
+  });
+  function esc(s) { return s.replace(/[&<>]/g, function (m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]; }); }
+  function hl(s, q) {
+    s = esc(s); if (!q) return s;
+    var i = s.toLowerCase().indexOf(q.toLowerCase()); if (i < 0) return s;
+    return s.slice(0, i) + '<mark>' + s.slice(i, i + q.length) + '</mark>' + s.slice(i + q.length);
+  }
+  function draw() {
+    var q = $('gq').value.trim(), ql = q.toLowerCase(), n = 0, html = '';
+    CAT.forEach(function (c) {
+      if (cur && cur !== c[0]) return;
+      var rows = G.filter(function (g) { return g[0] === c[0] && (!q || (g[1] + ' ' + g[2] + ' ' + g[3]).toLowerCase().indexOf(ql) >= 0); });
+      if (!rows.length) return;
+      n += rows.length;
+      html += '<section class="g-group"><h2><b>' + c[1] + '</b>' + c[2] + '</h2><dl class="terms">' + rows.map(function (g) {
+        return '<div class="term"><dt><b>' + hl(g[1], q) + '</b><i>' + hl(g[2], q) + '</i></dt><dd>' + hl(g[3], q) + '</dd></div>';
+      }).join('') + '</dl></section>';
+    });
+    $('glist').innerHTML = html;
+    $('gempty').hidden = n > 0;
+    $('gcount').textContent = n + ' / ' + G.length + ' 個名詞';
+  }
+  $('gq').addEventListener('input', draw);
+  draw();
+})();
+</script>
+
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <span>鐵路號誌連鎖 · 工程技術參考網站</span>
+    <span>內容為通用技術說明，實際數值與程序以各工程契約規範、設計圖說及設備製造商手冊為準。</span>
+  </div>
+</footer>
+</div>
+<script>
+(function () {
+  var b = document.getElementById('menu-btn'), n = document.getElementById('site-nav');
+  b.addEventListener('click', function () {
+    var o = n.classList.toggle('open'); b.setAttribute('aria-expanded', o);
+  });
+})();
+</script>
+</body>
+</html>

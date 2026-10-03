@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>鐵路號誌連鎖</title>
+<meta name="description" content="鐵路號誌連鎖的基本原理：進路、鎖閉、敵對進路與號誌開放條件。">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div style="--lamp:var(--green)">
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="鐵路號誌連鎖 首頁">
+      <span class="brand-head" aria-hidden="true"><i class="on-r"></i><i></i><i></i></span>
+      <span>鐵路號誌連鎖<small>RAILWAY INTERLOCKING</small></span>
+    </a>
+    <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="site-nav">選單</button>
+    <nav class="nav" id="site-nav" aria-label="主要導覽">
+        <a href="index.html" aria-current="page">首頁</a>
+        <a href="equipment.html">現場設備</a>
+        <a href="inspection.html">施工與檢查</a>
+        <a href="glossary.html">名詞解釋</a>
+    </nav>
+  </div>
+</header>
+<main>
+<style>
+.hero { padding-block: 48px 32px; border-bottom: 1px solid var(--line); }
+.hero-top { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 40px; align-items: end; }
+.hero h1 { font-size: clamp(38px, 6.4vw, 72px); font-weight: 900; letter-spacing: .03em; line-height: 1.12; margin-top: 14px; }
+.hero h1 span { color: var(--muted); font-weight: 500; }
+.hero .lede { color: var(--muted); font-size: 17px; max-width: 34em; }
+@media (max-width: 860px) { .hero-top { grid-template-columns: 1fr; gap: 16px; } }
+
+.board { margin-top: 32px; background: #080b0d; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.board-bar { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid var(--line); background: var(--panel); }
+.board-bar b { font-family: var(--font-label); font-weight: 600; letter-spacing: .16em; font-size: 13px; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 22px; height: 3px; display: inline-block; border-radius: 2px; }
+.diagram { overflow-x: auto; }
+.diagram svg { display: block; min-width: 680px; width: 100%; height: auto; }
+.trk { fill: none; stroke: #3a4852; stroke-width: 5; stroke-linecap: round; transition: stroke .25s; }
+.trk.off { stroke: #1e262c; stroke-dasharray: 2 7; stroke-width: 3; }
+.trk.lock { stroke: var(--route); }
+.trk.occ { stroke: var(--red); }
+.joint { stroke: #6c7a83; stroke-width: 2; }
+.sig-post { stroke: #8a979f; stroke-width: 2; fill: none; }
+.sig-lamp { stroke: #05080a; stroke-width: 2; transition: fill .2s; }
+.lbl { fill: #8f9aa1; font: 600 14px var(--font-label); letter-spacing: .06em; }
+.lbl-sec { fill: #5f6b73; font: 12px var(--font-mono); }
+.lbl-pt { font: 600 13px var(--font-body); }
+.board-ctl { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); border-top: 1px solid var(--line); }
+@media (max-width: 860px) { .board-ctl { grid-template-columns: 1fr; } }
+.ctl { padding: 18px; display: grid; gap: 16px; align-content: start; }
+.ctl + .ctl { border-left: 1px solid var(--line); }
+@media (max-width: 860px) { .ctl + .ctl { border-left: 0; border-top: 1px solid var(--line); } }
+.ctl h3 { font-family: var(--font-label); font-weight: 600; font-size: 13px; letter-spacing: .16em; color: var(--muted); }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { font: inherit; font-size: 14px; color: var(--fg); background: var(--panel-2); border: 1px solid var(--line-2); border-radius: var(--radius); padding: 8px 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: border-color .15s, background .15s; }
+.btn:hover { border-color: var(--muted); }
+.btn .mono { color: var(--muted); }
+.btn.active { border-color: var(--route); background: #222c33; }
+.btn.occ-on { border-color: var(--red); background: var(--red-soft); }
+.btn.ghost { background: transparent; }
+.log { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 14px; min-height: 9em; }
+.log li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 6px; color: var(--muted); }
+.log li.ok::before { content: "✓"; color: var(--green); }
+.log li.ng::before { content: "✕"; color: var(--red); }
+.log li.info::before { content: "›"; color: var(--yellow); }
+.log li.head { color: var(--fg); font-weight: 500; grid-template-columns: 1fr; margin-top: 4px; }
+.log li.head::before { content: none; }
+
+.cond { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.cond > div { padding: 22px; border-right: 1px solid var(--line); background: var(--panel); min-width: 0; }
+.cond > div:last-child { border-right: 0; }
+.cond .n { font-family: var(--font-label); font-weight: 700; font-size: 34px; color: var(--green); line-height: 1; }
+.cond h3 { font-size: 17px; margin: 12px 0 8px; }
+.cond p { color: var(--muted); font-size: 14.5px; }
+.cond-out { margin-top: 16px; display: flex; align-items: center; gap: 14px; padding: 16px 22px; border: 1px solid rgba(53,194,126,.45); background: var(--green-soft); border-radius: var(--radius); }
+@media (max-width: 960px) { .cond { grid-template-columns: 1fr 1fr; } .cond > div:nth-child(2) { border-right: 0; } .cond > div:nth-child(-n+2) { border-bottom: 1px solid var(--line); } }
+@media (max-width: 560px) { .cond { grid-template-columns: 1fr; } .cond > div { border-right: 0; border-bottom: 1px solid var(--line); } .cond > div:last-child { border-bottom: 0; } }
+
+.era { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--line); }
+.era > div { padding: 22px 22px 22px 0; min-width: 0; }
+.era > div + div { padding-left: 22px; border-left: 1px solid var(--line); }
+.era .yr { font-family: var(--font-mono); font-size: 12px; color: var(--dim); }
+.era h3 { font-size: 19px; margin: 6px 0 10px; }
+@media (max-width: 760px) { .era { grid-template-columns: 1fr; } .era > div, .era > div + div { padding: 20px 0; border-left: 0; border-bottom: 1px solid var(--line); } }
+
+.go { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.go a { display: grid; gap: 10px; text-decoration: none; padding: 24px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); transition: border-color .15s, transform .15s; }
+.go a:hover { border-color: var(--c); transform: translateY(-2px); }
+.go .lamp { background: var(--c); box-shadow: 0 0 12px var(--c); }
+.go h3 { font-size: 21px; }
+.go p { color: var(--muted); font-size: 15px; }
+.go .more { font-family: var(--font-label); font-weight: 600; letter-spacing: .12em; font-size: 13px; color: var(--c); }
+@media (max-width: 760px) { .go { grid-template-columns: 1fr; } }
+</style>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-top">
+      <div>
+        <div class="eyebrow">RAILWAY SIGNALLING · INTERLOCKING</div>
+        <h1>鐵路號誌連鎖<br><span>讓每一個綠燈都有根據</span></h1>
+      </div>
+      <p class="lede">連鎖是號誌系統的安全核心：號誌機、轉轍器與軌道區段之間以邏輯條件互相牽制。只有進路上的轉轍器位置正確且已鎖閉、區段沒有列車、也沒有敵對進路時，號誌才可以開放。下面這個站場可以實際操作看看。</p>
+    </div>
+
+    <div class="board" id="board">
+      <div class="board-bar">
+        <b>站場模擬 · 單線交會站</b>
+        <div class="legend">
+          <span><i style="background:#3a4852"></i>未使用</span>
+          <span><i style="background:var(--route)"></i>進路鎖閉</span>
+          <span><i style="background:var(--red)"></i>列車佔用</span>
+          <span><i style="background:#1e262c;outline:1px dashed #3a4852"></i>轉轍器未開通方向</span>
+        </div>
+      </div>
+      <div class="diagram">
+        <svg viewBox="0 0 1000 250" role="img" aria-label="單線交會站軌道配置圖：兩組轉轍器、一股主線與二股副線，兩端各有進站號誌機">
+          <!-- 軌道區段 -->
+          <path class="trk" id="t-1T" d="M30 170 H220"/>
+          <path class="trk" id="t-21T-N" d="M220 170 H380"/>
+          <path class="trk" id="t-21T-R" d="M262 170 L340 80 H380"/>
+          <path class="trk" id="t-1AT" d="M380 170 H620"/>
+          <path class="trk" id="t-2AT" d="M380 80 H620"/>
+          <path class="trk" id="t-22T-N" d="M620 170 H780"/>
+          <path class="trk" id="t-22T-R" d="M620 80 H660 L738 170"/>
+          <path class="trk" id="t-2T" d="M780 170 H970"/>
+          <!-- 區段分界（絕緣接頭／計軸點） -->
+          <g class="joint">
+            <line x1="220" y1="160" x2="220" y2="180"/><line x1="380" y1="160" x2="380" y2="180"/><line x1="380" y1="70" x2="380" y2="90"/>
+            <line x1="620" y1="160" x2="620" y2="180"/><line x1="620" y1="70" x2="620" y2="90"/><line x1="780" y1="160" x2="780" y2="180"/>
+          </g>
+          <!-- 區段名稱 -->
+          <text class="lbl-sec" x="110" y="155">1T</text>
+          <text class="lbl-sec" x="290" y="195">21T</text>
+          <text class="lbl-sec" x="470" y="195">1AT · 一股</text>
+          <text class="lbl-sec" x="470" y="66">2AT · 二股</text>
+          <text class="lbl-sec" x="680" y="195">22T</text>
+          <text class="lbl-sec" x="860" y="155">2T</text>
+          <!-- 轉轍器 -->
+          <text class="lbl-pt" id="p21" x="244" y="222">21 定位</text>
+          <text class="lbl-pt" id="p22" x="712" y="222">22 定位</text>
+          <!-- 號誌機：1R 進站（往右） -->
+          <g><line class="sig-post" x1="196" y1="192" x2="196" y2="212"/><line class="sig-post" x1="196" y1="202" x2="206" y2="202"/>
+            <circle class="sig-lamp" id="s-1R" cx="214" cy="202" r="8" fill="var(--red)"/><text class="lbl" x="186" y="235">1R 進站</text></g>
+          <!-- 1L 進站（往左） -->
+          <g><line class="sig-post" x1="804" y1="128" x2="804" y2="148"/><line class="sig-post" x1="804" y1="138" x2="794" y2="138"/>
+            <circle class="sig-lamp" id="s-1L" cx="786" cy="138" r="8" fill="var(--red)"/><text class="lbl" x="772" y="118">1L 進站</text></g>
+          <!-- 出發號誌機 -->
+          <g><line class="sig-post" x1="596" y1="192" x2="596" y2="212"/><line class="sig-post" x1="596" y1="202" x2="606" y2="202"/>
+            <circle class="sig-lamp" cx="612" cy="202" r="6" fill="var(--red)"/><text class="lbl" x="572" y="235">2R 出發</text></g>
+          <g><line class="sig-post" x1="596" y1="102" x2="596" y2="122"/><line class="sig-post" x1="596" y1="112" x2="606" y2="112"/>
+            <circle class="sig-lamp" cx="612" cy="112" r="6" fill="var(--red)"/><text class="lbl" x="556" y="140">3R 出發</text></g>
+          <g><line class="sig-post" x1="404" y1="128" x2="404" y2="148"/><line class="sig-post" x1="404" y1="138" x2="394" y2="138"/>
+            <circle class="sig-lamp" cx="388" cy="138" r="6" fill="var(--red)"/><text class="lbl" x="400" y="123">2L 出發</text></g>
+          <g><line class="sig-post" x1="404" y1="38" x2="404" y2="58"/><line class="sig-post" x1="404" y1="48" x2="394" y2="48"/>
+            <circle class="sig-lamp" cx="388" cy="48" r="6" fill="var(--red)"/><text class="lbl" x="414" y="53">3L 出發</text></g>
+        </svg>
+      </div>
+      <div class="board-ctl">
+        <div class="ctl">
+          <h3>排列進路</h3>
+          <div class="btns" id="route-btns"></div>
+          <h3>列車位置（點選切換有車／無車）</h3>
+          <div class="btns" id="occ-btns"></div>
+          <div class="btns"><button class="btn ghost" id="reset">全部復原</button></div>
+        </div>
+        <div class="ctl">
+          <h3>連鎖檢查紀錄</h3>
+          <ul class="log" id="log" aria-live="polite">
+            <li class="head">點選左側進路按鈕開始。進路已建立時再按一次即為取消進路。</li>
+            <li class="info">建議試試：先排 1R→一股，再排 1L→二股，看看為什麼被拒絕。</li>
+            <li class="info">再試：排好進路後把 1T 設為有車，然後取消進路。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">SIGNAL CLEARING CONDITIONS</span>
+      <h2>號誌開放的四個前提</h2>
+      <p>連鎖裝置在收到排列進路的指令後，會依連鎖表逐項檢查以下條件。任何一項不成立，號誌機都維持停止現示；號誌開放之後條件若失去（例如區段突然被佔用），號誌立即恢復停止。</p>
+    </div>
+    <div class="cond">
+      <div><div class="n">1</div><h3>轉轍器位置正確且鎖閉</h3><p>進路與過走餘裕內的轉轍器已轉換到規定方向，密貼檢知成立，並由連鎖鎖閉，不能再被轉換。</p></div>
+      <div><div class="n">2</div><h3>軌道區段無列車</h3><p>進路上的軌道電路或計軸區段全部無佔用，包含號誌機外方必要的過走餘裕區段。</p></div>
+      <div><div class="n">3</div><h3>沒有敵對進路</h3><p>任何會與本進路互相衝突的進路（對向進入同一股道、交叉、共用轉轍器方向相反）都未建立，其號誌在停止。</p></div>
+      <div><div class="n">4</div><h3>側面防護成立</h3><p>可能從側方駛入本進路的路徑，已由防護轉轍器轉向安全方向，或由相關號誌保持停止來阻擋。</p></div>
+    </div>
+    <div class="cond-out"><span class="lamp g" aria-hidden="true"></span><span>四項同時成立 → 進路鎖閉 → 號誌開放（依前方號誌狀態顯示進行、減速、注意或警戒）。</span></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">LOCKING</span>
+      <h2>鎖閉的層次</h2>
+      <p>「鎖閉」是連鎖最核心的動作：把進路上的轉轍器與敵對號誌固定住，直到列車安全通過或進路被合法取消。不同鎖閉在不同時機建立與解除。</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>鎖閉種類</th><th>建立時機</th><th>解除時機</th><th>防止的狀況</th></tr></thead>
+        <tbody>
+          <tr><td><strong>轉轍器鎖閉</strong></td><td>轉轍器所在區段有列車，或被進路鎖住時</td><td>區段無車且不屬於任何已鎖閉進路</td><td>列車壓在轉轍器上時被轉換，造成出軌</td></tr>
+          <tr><td><strong>進路鎖閉</strong></td><td>號誌開放、列車進入進路後</td><td>列車依序通過各區段後逐段解除（分段解鎖）</td><td>列車行駛途中前方轉轍器被轉換</td></tr>
+          <tr><td><strong>接近鎖閉</strong></td><td>號誌開放且接近區段有列車時</td><td>取消進路後須經延時（時素）才解除，或列車已進入進路</td><td>司機已看到進行號誌、來不及停車時進路被取消</td></tr>
+          <tr><td><strong>保留鎖閉</strong></td><td>號誌開放而接近區段無車時</td><td>取消進路即可立即解除</td><td>號誌開放到列車接近之間，進路被其他操作改變</td></tr>
+          <tr><td><strong>過走餘裕鎖閉</strong></td><td>隨進路一起建立</td><td>列車在目的股道停妥並經延時，或進路取消</td><td>列車停車不及越過出發號誌，駛入有衝突的路線</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">EVOLUTION</span>
+      <h2>從機械桿到電腦：連鎖的三個世代</h2>
+      <p>不論用什麼技術實現，連鎖邏輯都相同；差別在於邏輯放在哪裡、如何確保故障時偏向安全。</p>
+    </div>
+    <div class="era">
+      <div><span class="yr">19 世紀 —</span><h3>機械連鎖</h3><ul class="ticks"><li>扳桿以連桿、鎖條直接互鎖，號誌與轉轍器由號誌樓人力扳動。</li><li>連鎖關係刻在機械結構上，修改站場配置須更換鎖條。</li><li>控制距離受鋼索與連桿長度限制。</li></ul></div>
+      <div><span class="yr">20 世紀中 —</span><h3>繼電連鎖</h3><ul class="ticks"><li>以安全型（重力落下式）繼電器組成連鎖電路，失電時接點落下即偏向安全。</li><li>進路式操作：按起點、終點兩個按鈕即自動轉換轉轍器並開放號誌。</li><li>配線量大、修改需重新施工配線並全面測試。</li></ul></div>
+      <div><span class="yr">1980 年代 —</span><h3>電子連鎖</h3><ul class="ticks"><li>連鎖邏輯以軟體資料（連鎖表）實現，常見 2 取 2、2×2 取 2 或 3 取 2 冗餘架構。</li><li>內建事件紀錄、遠端監視，容易與 CTC、ATP 介接。</li><li>站場變更改資料即可，但必須經過完整的驗證與現場測試。</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">CONTENTS</span>
+      <h2>網站內容</h2>
+    </div>
+    <div class="go">
+      <a href="equipment.html" style="--c:var(--yellow)"><span class="lamp" aria-hidden="true"></span><h3>現場設備</h3><p>號誌機、電動轉轍器、計軸器與平交道防護設備：構造、與連鎖的關係、施工注意事項。</p><span class="more">前往現場設備 →</span></a>
+      <a href="inspection.html" style="--c:var(--red)"><span class="lamp" aria-hidden="true"></span><h3>施工與檢查</h3><p>自主檢查三階段、★檢驗停留點流程，以及各分項工程可篩選的檢查要點清單。</p><span class="more">前往施工與檢查 →</span></a>
+      <a href="glossary.html" style="--c:var(--lunar)"><span class="lamp" aria-hidden="true"></span><h3>名詞解釋</h3><p>號誌、連鎖、列車偵測、轉轍器、平交道與品管術語，附英文對照，可即時搜尋。</p><span class="more">前往名詞解釋 →</span></a>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  var ROUTES = {
+    A: { name: '1R→一股', sig: '1R', pts: { 21: 'N' }, secs: ['21T', '1AT'], ovl: { secs: ['22T'], pts: { 22: 'N' } }, dest: '1AT', appr: '1T' },
+    B: { name: '1R→二股', sig: '1R', pts: { 21: 'R' }, secs: ['21T', '2AT'], ovl: { secs: ['22T'], pts: { 22: 'R' } }, dest: '2AT', appr: '1T' },
+    C: { name: '1L→一股', sig: '1L', pts: { 22: 'N' }, secs: ['22T', '1AT'], ovl: { secs: ['21T'], pts: { 21: 'N' } }, dest: '1AT', appr: '2T' },
+    D: { name: '1L→二股', sig: '1L', pts: { 22: 'R' }, secs: ['22T', '2AT'], ovl: { secs: ['21T'], pts: { 21: 'R' } }, dest: '2AT', appr: '2T' }
+  };
+  var OCC = ['1T', '1AT', '2AT', '2T'];
+  var S;
+  function init() { S = { pt: { 21: 'N', 22: 'N' }, ptLock: { 21: null, 22: null }, secLock: {}, occ: {}, active: {}, timers: {} }; }
+  init();
+  var $ = function (id) { return document.getElementById(id); };
+  var log = $('log');
+  function say(lines) {
+    log.innerHTML = '';
+    lines.forEach(function (l) { var li = document.createElement('li'); li.className = l[0]; li.textContent = l[1]; log.appendChild(li); });
+  }
+  function ptName(p, pos) { return '轉轍器 ' + p + (pos === 'N' ? ' 定位' : ' 反位'); }
+
+  function render() {
+    ['1T', '1AT', '2AT', '2T'].forEach(function (s) {
+      var el = $('t-' + s); el.setAttribute('class', 'trk' + (S.occ[s] ? ' occ' : S.secLock[s] ? ' lock' : ''));
+    });
+    [['21T', 21], ['22T', 22]].forEach(function (x) {
+      var s = x[0], p = x[1], on = S.pt[p], off = on === 'N' ? 'R' : 'N';
+      $('t-' + s + '-' + on).setAttribute('class', 'trk' + (S.occ[s] ? ' occ' : S.secLock[s] ? ' lock' : ''));
+      $('t-' + s + '-' + off).setAttribute('class', 'trk off');
+      var t = $('p' + p); t.textContent = p + (on === 'N' ? ' 定位' : ' 反位') + (S.ptLock[p] ? ' · 鎖閉' : '');
+      t.style.fill = S.ptLock[p] ? 'var(--route)' : 'var(--muted)';
+    });
+    ['1R', '1L'].forEach(function (sig) {
+      var lit = false;
+      Object.keys(S.active).forEach(function (k) { if (ROUTES[k].sig === sig && S.active[k].clear) lit = true; });
+      $('s-' + sig).setAttribute('fill', lit ? 'var(--yellow)' : 'var(--red)');
+    });
+    Object.keys(ROUTES).forEach(function (k) { $('rb-' + k).classList.toggle('active', !!S.active[k]); });
+    OCC.forEach(function (s) { $('ob-' + s).classList.toggle('occ-on', !!S.occ[s]); });
+  }
+
+  function lockOwner(sec) { return S.secLock[sec]; }
+
+  function setRoute(k) {
+    var r = ROUTES[k], out = [['head', '排列進路 ' + r.name]], bad = false;
+    // 號誌機是否已被另一進路使用
+    Object.keys(S.active).forEach(function (o) { if (ROUTES[o].sig === r.sig) { out.push(['ng', '號誌機 ' + r.sig + ' 已用於進路 ' + ROUTES[o].name]); bad = true; } });
+    // 敵對：區段已被其他進路鎖閉
+    r.secs.concat(r.ovl.secs).forEach(function (s) {
+      var o = lockOwner(s);
+      if (o) { out.push(['ng', '區段 ' + s + ' 已被進路 ' + ROUTES[o].name + ' 鎖閉（敵對進路）']); bad = true; }
+    });
+    // 轉轍器
+    var need = Object.assign({}, r.pts, r.ovl.pts);
+    Object.keys(need).forEach(function (p) {
+      if (S.pt[p] !== need[p] && S.ptLock[p]) { out.push(['ng', ptName(p, S.pt[p]) + ' 已被 ' + ROUTES[S.ptLock[p]].name + ' 鎖閉，無法轉至' + (need[p] === 'N' ? '定位' : '反位')]); bad = true; }
+      else if (S.pt[p] !== need[p] && S.occ[p + 'T']) { out.push(['ng', '轉轍器 ' + p + ' 區段有車，轉轍器鎖閉中']); bad = true; }
+    });
+    // 佔用
+    r.secs.concat(r.ovl.secs).forEach(function (s) { if (S.occ[s]) { out.push(['ng', '區段 ' + s + ' 有列車佔用']); bad = true; } });
+    if (bad) { out.push(['info', '條件不成立，號誌 ' + r.sig + ' 維持停止。']); say(out); return; }
+    Object.keys(need).forEach(function (p) {
+      var moved = S.pt[p] !== need[p]; S.pt[p] = need[p]; S.ptLock[p] = k;
+      out.push(['ok', ptName(p, need[p]) + (moved ? '：轉換完成，密貼檢知成立，鎖閉' : '：位置正確，鎖閉') + (r.ovl.pts[p] ? '（過走餘裕）' : '')]);
+    });
+    r.secs.forEach(function (s) { S.secLock[s] = k; });
+    r.ovl.secs.forEach(function (s) { S.secLock[s] = k; });
+    out.push(['ok', '進路區段 ' + r.secs.join('、') + ' 無佔用，進路鎖閉']);
+    out.push(['ok', '過走餘裕區段 ' + r.ovl.secs.join('、') + ' 無佔用，一併鎖閉']);
+    out.push(['ok', '無敵對進路']);
+    S.active[k] = { clear: true };
+    out.push(['info', '號誌 ' + r.sig + ' 開放：注意（黃）——前方出發號誌為停止。']);
+    if (S.occ[r.appr]) out.push(['info', '接近區段 ' + r.appr + ' 有車，接近鎖閉成立。']);
+    say(out); render();
+  }
+
+  function release(k) {
+    var r = ROUTES[k];
+    r.secs.concat(r.ovl.secs).forEach(function (s) { if (S.secLock[s] === k) delete S.secLock[s]; });
+    Object.keys(S.ptLock).forEach(function (p) { if (S.ptLock[p] === k) S.ptLock[p] = null; });
+    delete S.active[k];
+  }
+
+  function cancelRoute(k) {
+    var r = ROUTES[k];
+    if (S.timers[k]) return;
+    S.active[k].clear = false;
+    if (S.occ[r.appr]) {
+      var n = 6;
+      var tick = function () {
+        say([['head', '取消進路 ' + r.name], ['ok', '號誌 ' + r.sig + ' 恢復停止'], ['info', '接近區段 ' + r.appr + ' 有車：接近鎖閉中，延時解鎖倒數 ' + n + ' 秒（示意）'], ['info', '延時期間轉轍器仍鎖閉，防止列車停不住時進路被改變。']]);
+        render();
+        if (n-- <= 0) {
+          clearInterval(S.timers[k]); delete S.timers[k]; release(k);
+          say([['head', '取消進路 ' + r.name], ['ok', '延時結束，進路解鎖，轉轍器可再轉換']]); render();
+        }
+      };
+      tick(); S.timers[k] = setInterval(tick, 1000);
+    } else {
+      release(k);
+      say([['head', '取消進路 ' + r.name], ['ok', '號誌 ' + r.sig + ' 恢復停止'], ['ok', '接近區段無車，保留鎖閉立即解除，進路解鎖']]);
+      render();
+    }
+  }
+
+  function toggleOcc(s) {
+    S.occ[s] = !S.occ[s];
+    var out = [['head', '區段 ' + s + (S.occ[s] ? ' 有車' : ' 無車')]];
+    if (S.occ[s]) {
+      Object.keys(S.active).forEach(function (k) {
+        var r = ROUTES[k];
+        if (S.active[k].clear && r.secs.concat(r.ovl.secs).indexOf(s) >= 0) {
+          S.active[k].clear = false;
+          out.push(['ng', '進路 ' + r.name + ' 內區段被佔用，號誌 ' + r.sig + ' 立即恢復停止']);
+          out.push(['info', '進路維持鎖閉，轉轍器不可轉換。']);
+        } else if (r.appr === s && S.active[k].clear) {
+          out.push(['info', '列車接近號誌 ' + r.sig + '，接近鎖閉成立；此時取消進路須延時解鎖。']);
+        }
+      });
+    }
+    if (out.length === 1) out.push(['info', S.occ[s] ? '列車停留於 ' + s + '，以此區段為進路的操作會被拒絕。' : '區段恢復無車。']);
+    say(out); render();
+  }
+
+  var rb = $('route-btns');
+  Object.keys(ROUTES).forEach(function (k) {
+    var b = document.createElement('button'); b.className = 'btn'; b.id = 'rb-' + k; b.type = 'button';
+    b.innerHTML = '<span class="mono">' + ROUTES[k].sig + '</span>' + ROUTES[k].name.split('→')[1];
+    b.addEventListener('click', function () { S.active[k] ? cancelRoute(k) : setRoute(k); });
+    rb.appendChild(b);
+  });
+  var ob = $('occ-btns');
+  OCC.forEach(function (s) {
+    var b = document.createElement('button'); b.className = 'btn'; b.id = 'ob-' + s; b.type = 'button';
+    b.innerHTML = '<span class="mono">' + s + '</span>' + ({ '1T': '左側接近', '1AT': '一股', '2AT': '二股', '2T': '右側接近' })[s];
+    b.addEventListener('click', function () { toggleOcc(s); });
+    ob.appendChild(b);
+  });
+  $('reset').addEventListener('click', function () {
+    Object.keys(S.timers).forEach(function (k) { clearInterval(S.timers[k]); });
+    init(); render(); say([['head', '已全部復原'], ['info', '所有號誌停止、轉轍器回定位、進路解鎖。']]);
+  });
+  render();
+})();
+</script>
+
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <span>鐵路號誌連鎖 · 工程技術參考網站</span>
+    <span>內容為通用技術說明，實際數值與程序以各工程契約規範、設計圖說及設備製造商手冊為準。</span>
+  </div>
+</footer>
+</div>
+<script>
+(function () {
+  var b = document.getElementById('menu-btn'), n = document.getElementById('site-nav');
+  b.addEventListener('click', function () {
+    var o = n.classList.toggle('open'); b.setAttribute('aria-expanded', o);
+  });
+})();
+</script>
+</body>
+</html>

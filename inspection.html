@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>施工與檢查｜鐵路號誌連鎖</title>
+<meta name="description" content="號誌工程自主檢查流程、檢驗停留點與各分項工程檢查要點。">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div style="--lamp:var(--red)">
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="鐵路號誌連鎖 首頁">
+      <span class="brand-head" aria-hidden="true"><i class="on-r"></i><i></i><i></i></span>
+      <span>鐵路號誌連鎖<small>RAILWAY INTERLOCKING</small></span>
+    </a>
+    <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="site-nav">選單</button>
+    <nav class="nav" id="site-nav" aria-label="主要導覽">
+        <a href="index.html">首頁</a>
+        <a href="equipment.html">現場設備</a>
+        <a href="inspection.html" aria-current="page">施工與檢查</a>
+        <a href="glossary.html">名詞解釋</a>
+    </nav>
+  </div>
+</header>
+<main>
+<style>
+.flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.flow > div { padding: 24px; background: var(--panel); border-right: 1px solid var(--line); min-width: 0; }
+.flow > div:last-child { border-right: 0; }
+.flow .ph { font-family: var(--font-label); font-weight: 700; letter-spacing: .14em; font-size: 13px; color: var(--red); }
+.flow h3 { font-size: 20px; margin: 6px 0 12px; }
+@media (max-width: 760px) { .flow { grid-template-columns: 1fr; } .flow > div { border-right: 0; border-bottom: 1px solid var(--line); } .flow > div:last-child { border-bottom: 0; } }
+
+.hp { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; align-items: stretch; }
+.hp > div { position: relative; padding: 18px 16px; border: 1px solid var(--line-2); border-radius: var(--radius); background: var(--panel); min-width: 0; }
+.hp > div:not(:last-child)::after { content: "→"; position: absolute; right: -10px; top: 50%; transform: translate(50%, -50%); color: var(--dim); font-size: 14px; }
+.hp .n { font-family: var(--font-label); font-weight: 700; font-size: 26px; line-height: 1; color: var(--red); }
+.hp h4 { font-size: 16px; margin: 10px 0 6px; }
+.hp p { font-size: 14px; color: var(--muted); }
+.hp > div.pass { border-color: rgba(53,194,126,.5); background: var(--green-soft); }
+.hp > div.pass .n { color: var(--green); }
+.hp-back { margin-top: 12px; display: flex; gap: 10px; align-items: center; font-size: 14px; color: var(--muted); }
+.hp-back b { color: var(--red); font-weight: 500; }
+@media (max-width: 900px) { .hp { grid-template-columns: 1fr; } .hp > div:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -10px; transform: translate(50%, 50%); } }
+
+.marks { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.mark { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 12px; align-items: start; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+.mark .sym { font-size: 26px; line-height: 1; text-align: center; font-weight: 700; }
+.mark b { display: block; font-weight: 500; }
+.mark span { font-size: 14px; color: var(--muted); }
+
+/* 檢查清單 */
+.filters { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
+@media (max-width: 860px) { .filters { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .filters { grid-template-columns: 1fr; } }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field label { font-family: var(--font-label); font-weight: 600; letter-spacing: .14em; font-size: 12px; color: var(--muted); }
+.field input, .field select { font: inherit; font-size: 15px; color: var(--fg); background: var(--panel); border: 1px solid var(--line-2); border-radius: var(--radius); padding: 9px 12px; width: 100%; min-width: 0; }
+.field input:focus, .field select:focus { border-color: var(--red); outline: none; }
+.count { font-size: 14px; color: var(--muted); margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.count b { color: var(--fg); font-variant-numeric: tabular-nums; }
+#list td:nth-child(1) { white-space: nowrap; color: var(--muted); font-size: 14px; }
+#list td:nth-child(2) { white-space: nowrap; }
+#list td:nth-child(3) { color: var(--muted); font-size: 14px; white-space: nowrap; }
+#list td:nth-child(5) { white-space: nowrap; }
+#list tr.hp-row td:nth-child(4) { color: var(--fg); }
+.empty { padding: 28px; text-align: center; color: var(--muted); }
+.ph-pill { font-size: 12px; padding: 1px 8px; border-radius: 4px; border: 1px solid var(--line-2); color: var(--muted); }
+
+ol.rules { margin: 0; padding-left: 1.4em; display: grid; gap: 10px; color: var(--muted); max-width: 52em; }
+ol.rules li::marker { color: var(--red); font-family: var(--font-label); font-weight: 700; }
+ol.rules strong { color: var(--fg); font-weight: 500; }
+</style>
+
+<header class="page-head">
+  <div class="wrap">
+    <div class="eyebrow">CONSTRUCTION &amp; INSPECTION</div>
+    <h1>施工與檢查</h1>
+    <p class="lede">號誌工程做錯一條線，連鎖邏輯再完美也沒有意義。自主檢查把品質管控拆進每一道工序：施工前確認文件與位置，施工中逐項量測，關鍵工序設為停留點，由監造到場檢驗合格後才能往下做。</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">THREE PHASES</span>
+      <h2>自主檢查三階段</h2>
+      <p>每一張分項工程自主檢查表都依施工階段分區。現場工程師實地檢查後簽認，再由工地負責人複閱。</p>
+    </div>
+    <div class="flow">
+      <div><span class="ph">PHASE 1</span><h3>施工前</h3><ul class="ticks" style="--lamp:var(--red)">
+        <li><strong>文件審查</strong>：施工圖說已核定，材料與設備已完成進場查驗。</li>
+        <li><strong>現場放樣</strong>：經現場會勘或施工前協調會議確認安裝位置，與圖說相符。</li>
+        <li><strong>吊裝準備</strong>：吊裝人員與機具具備合格證照與檢查紀錄。</li>
+        <li>拆收工程須先建立拆收清冊並做現場標記。</li>
+      </ul></div>
+      <div><span class="ph">PHASE 2</span><h3>施工中</h3><ul class="ticks" style="--lamp:var(--red)">
+        <li><strong>安裝定位</strong>：與軌道中心的淨空距離、水平、垂直。</li>
+        <li><strong>鎖固</strong>：以扭力扳手鎖到規定值並記錄實測值。</li>
+        <li><strong>結線</strong>：配線整齊、套號碼標籤、字碼朝外、未用接點隔離。</li>
+        <li><strong>量測</strong>：絕緣電阻、導通電阻、光損、接地電阻、設備電壓。</li>
+        <li><strong>功能</strong>：密貼、警報、遮斷、偵測等動作測試。</li>
+      </ul></div>
+      <div><span class="ph">PHASE 3</span><h3>施工後</h3><ul class="ticks" style="--lamp:var(--red)">
+        <li><strong>現場清理</strong>：廢棄物清除，暫存材料不得妨礙正線營運或行人通行。</li>
+        <li><strong>標示</strong>：設備編號、標示牌、號誌用鎖確認上鎖。</li>
+        <li><strong>安衛查驗</strong>：檢視安全衛生自動檢查表單填報情形。</li>
+        <li>不合格項目開立追蹤管制，限期改善後複查。</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">HOLD POINT ★</span>
+      <h2>檢驗停留點的流程</h2>
+      <p>標記★的項目是檢驗停留點。施工到這一步必須停下來，自主檢查合格並以書面通知監造單位派員檢驗，檢驗合格後才能繼續下一道工序。常見設在「做完之後就看不到」的地方，例如回填前、封箱前、通電前。</p>
+    </div>
+    <div class="hp">
+      <div><div class="n">1</div><h4>施工到停留點</h4><p>依施工計畫，到達表列★項目即暫停。</p></div>
+      <div><div class="n">2</div><h4>自主檢查</h4><p>現場工程師依檢查表逐項檢查、量測並記錄實測值。</p></div>
+      <div><div class="n">3</div><h4>書面通知監造</h4><p>自主檢查合格後，填寫施工檢驗申請單通知監造單位。</p></div>
+      <div><div class="n">4</div><h4>監造檢驗</h4><p>監造人員到場抽驗或全驗，並於紀錄上簽認。</p></div>
+      <div class="pass"><div class="n">5</div><h4>合格放行</h4><p>取得檢驗合格紀錄後，才可進行下一道工序。</p></div>
+    </div>
+    <div class="hp-back"><b>不合格 ↺</b> 改善後重新自主檢查，再次通知監造檢驗；嚴重缺失開立不合格追蹤管制表。</div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">SYMBOLS</span>
+      <h2>檢查表符號</h2>
+    </div>
+    <div class="marks">
+      <div class="mark"><span class="sym" style="color:var(--red)">★</span><div><b>檢驗停留點</b><span>自主檢查合格後須通知監造檢驗，合格才能繼續施工。</span></div></div>
+      <div class="mark"><span class="sym" style="color:var(--yellow)">※</span><div><b>安衛查驗點</b><span>須同時檢查安全衛生措施，例如吊裝證照、現場清理。</span></div></div>
+      <div class="mark"><span class="sym" style="color:var(--green)">○</span><div><b>合格</b><span>檢查結果符合標準。</span></div></div>
+      <div class="mark"><span class="sym" style="color:var(--red)">╳</span><div><b>不合格</b><span>須記錄缺失並追蹤改善。</span></div></div>
+      <div class="mark"><span class="sym" style="color:var(--muted)">／</span><div><b>無需查驗</b><span>本次施工不涉及此項目。</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="checklist">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">CHECKLIST</span>
+      <h2>分項工程檢查要點</h2>
+      <p>整理號誌工程常見分項工程的檢查要點，可依分項、階段、符號篩選或搜尋關鍵字。本清單為通用版，扭力、距離、電阻、電壓等數值門檻請以各工程契約規範及設備製造商手冊為準。</p>
+    </div>
+    <div class="filters">
+      <div class="field"><label for="q">搜尋關鍵字</label><input id="q" type="search" placeholder="例如：扭力、接地、密貼" autocomplete="off"></div>
+      <div class="field"><label for="f-cat">分項工程</label><select id="f-cat"></select></div>
+      <div class="field"><label for="f-ph">施工階段</label><select id="f-ph"><option value="">全部階段</option><option>施工前</option><option>施工中</option><option>施工後</option><option>安全</option></select></div>
+      <div class="field"><label for="f-mk">符號</label><select id="f-mk"><option value="">全部項目</option><option value="★">只看 ★ 停留點</option><option value="※">只看 ※ 安衛查驗點</option></select></div>
+    </div>
+    <div class="count" id="count"></div>
+    <div class="table-wrap">
+      <table id="list">
+        <thead><tr><th>代碼</th><th>分項工程</th><th>階段</th><th>檢查項目</th><th>符號</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="empty" id="empty" hidden>沒有符合條件的項目。試著清除關鍵字或改選「全部」。</div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">GENERAL RULES</span>
+      <h2>填表通則</h2>
+    </div>
+    <ol class="rules">
+      <li>檢查標準與實際檢查情形應<strong>具體量化</strong>，填實測值而不是只打勾，例如「扭力 102 Nm」。</li>
+      <li>結果欄以 <strong>○ 合格、╳ 不合格、／ 無需查驗</strong> 註記。</li>
+      <li>嚴重缺失或未完成改善的缺失，應填具<strong>不合格追蹤管制表</strong>，限期改善並複查。</li>
+      <li>現場檢查時應同時審視<strong>安全衛生</strong>執行情形。</li>
+      <li>由現場工程師實地檢查後覈實記載簽認，並由工地負責人或授權人複閱。</li>
+      <li>檢查表編號應連續，<strong>不得跳號</strong>。</li>
+      <li>到達 ★ 檢驗停留點時，須先自主檢查合格，再以書面通知監造單位派員檢驗，方可繼續施工。</li>
+    </ol>
+  </div>
+</section>
+
+<script>
+(function () {
+  var CATS = [
+    ['E01', '電子連鎖裝置組裝配線'], ['E02', '過軌地下電纜管路'], ['E03', '電腦設備'], ['E04', '號誌電源設備'],
+    ['E05', '電動轉轍器'], ['E06', '號誌機（含機柱）'], ['E07', '器具箱／電纜接續箱'], ['E08', '號誌設備、纜線拆收'],
+    ['E09', '計軸系統（軌旁）'], ['E10', '計軸系統（室內）'], ['E11', '平交道防護設備'], ['E12', '電纜施工'],
+    ['E13', '光纜施工'], ['E14', '監視系統設備'], ['E15', '維修平台／護欄／爬梯'], ['E16', '水泥基礎／工作平台'],
+    ['E17', '水泥線槽'], ['S01', '一般作業施工安全']
+  ];
+  // [代碼, 階段, 符號, 檢查項目]
+  var D = [
+    ['E01','施工前','★','設備進場吊裝：吊裝人員與機具證照、檢查紀錄齊備'],
+    ['E01','施工前','','施工圖說已核定，材料與設備已完成進場查驗'],
+    ['E01','施工中','','連鎖裝置機櫃安裝完成，固定穩固'],
+    ['E01','施工中','★','內部模組安裝完成，型號與數量與設計相符'],
+    ['E01','施工中','★','內部排線組裝完成'],
+    ['E01','施工中','','機櫃標籤名稱標示、線套安裝完成'],
+    ['E01','施工中','','光纖配線收容盤（ODF）安裝完成'],
+    ['E01','施工中','★','電纜結線完成，標籤字碼朝外'],
+    ['E01','施工中','','電纜架安裝穩固（吊掛式或高架地板下），進出纜線置於電纜架上並固定'],
+    ['E01','施工中','','接地線安裝完成，機房接地電阻符合規定並記錄'],
+    ['E01','施工後','※','現場清理，暫存材料不得妨礙人員通行'],
+
+    ['E02','施工前','','經現場會勘或施工前協調會議確認過軌管埋設位置'],
+    ['E02','施工中','★','過軌開挖深度：鋼軌面至管壁上緣達規定深度'],
+    ['E02','施工中','','開挖寬度配合管徑或線槽尺寸'],
+    ['E02','施工中','','PVC 管規格（外徑、厚度）量測記錄，管帽套蓋完成，管內預留引線'],
+    ['E02','施工中','★','回填採「土在下、道碴在上」方式'],
+    ['E02','施工中','★','回填後量測軌距、水平及高低，並經鐵路工務單位確認'],
+
+    ['E03','施工前','★','電腦設備材質、規格型式與規範相符'],
+    ['E03','施工中','','主機、螢幕、周邊設備組裝完成'],
+    ['E03','施工中','★','軟體版次確認並安裝完成'],
+    ['E03','施工中','','運轉紀錄器伺服器與印表機組裝完成'],
+    ['E03','施工中','','光電轉換器安裝完成，線材連結並固定'],
+
+    ['E04','施工前','','安裝位置經協調會議確認或符合圖說'],
+    ['E04','施工中','','充電機、變流器、電池組型式與數量核對記錄'],
+    ['E04','施工中','★','電池外觀無破損'],
+    ['E04','施工中','★','電池液位於高、低準位之間，不足時補充'],
+    ['E04','施工中','','電池正負極連接正確，電池架組裝完成'],
+    ['E04','施工中','','交直流分電箱、隔離變壓器規格與數量核對'],
+    ['E04','施工中','★','電纜結線完成，標籤字碼朝外'],
+    ['E04','施工中','','接地線安裝完成，機房接地電阻符合規定並記錄'],
+
+    ['E05','施工前','★','設備進場吊裝：吊裝人員與機具證照齊備'],
+    ['E05','施工前','','經現場會勘確認安裝位置，施工圖說已核定'],
+    ['E05','施工中','★','轉轍器本體固定螺栓以扭力扳手鎖固達規定值'],
+    ['E05','施工中','★','安裝位置與軌道中心保持規定距離'],
+    ['E05','施工中','','轉轍器編號噴塗完成'],
+    ['E05','施工中','','動作桿、鎖錠桿依鋼軌種類安裝固定'],
+    ['E05','施工中','★','插銷（開口銷）已安裝並扳開'],
+    ['E05','施工中','★','密貼測試：夾入規定薄測試片時應可鎖錠'],
+    ['E05','施工中','★','密貼測試：夾入規定厚測試片時不可鎖錠'],
+    ['E05','施工中','','就地扳轉開關安裝固定（單動／雙動）'],
+    ['E05','施工中','','號誌用鎖、尖軌鎖定器緊扣上鎖，數量記錄'],
+    ['E05','施工中','','配結線排列整齊正確並套號碼標籤'],
+    ['E05','施工中','','接地片安裝完成，接地電阻記錄於功能測試紀錄'],
+    ['E05','施工中','','開口插銷確實折彎到位，數量清點'],
+    ['E05','施工後','※','現場清理，道旁暫存物品不得妨礙正線營運'],
+
+    ['E06','施工前','★','設備進場吊裝：吊裝人員與機具證照齊備'],
+    ['E06','施工前','','經現場會勘確認安裝位置，施工圖說已核定'],
+    ['E06','施工中','★','號誌機、進路表示器與軌道中心保持規定安全距離（依矮型、中型、高型）'],
+    ['E06','施工中','','LED 燈色及數量核對記錄'],
+    ['E06','施工中','','號誌機編號噴漆完成，號誌用鎖上鎖'],
+    ['E06','施工中','★','號誌機柱及配件以扭力扳手鎖固達規定值'],
+    ['E06','施工中','','出發反應標誌、調車區界標、號誌機標示牌安裝完成'],
+    ['E06','施工中','','進出纜線固定，結線標籤朝外'],
+    ['E06','施工中','','接地片安裝完成，接地電阻記錄於功能測試紀錄'],
+    ['E06','施工後','※','現場清理，道旁暫存物品不得妨礙正線營運'],
+
+    ['E07','施工前','','經現場會勘確認器具箱安裝位置'],
+    ['E07','施工中','★','器具箱水平尺氣泡居中'],
+    ['E07','施工中','★','器具箱固定螺栓以扭力扳手鎖固達規定值'],
+    ['E07','施工中','★','箱體不得搖晃、變形'],
+    ['E07','施工中','★','器具箱與軌道中心保持規定距離'],
+    ['E07','施工中','','配線孔密封，防止鼠、蛇及爬蟲類侵入'],
+    ['E07','施工中','','電纜接續箱、接線盒安裝妥善，與軌道中心保持規定距離，編號噴漆'],
+    ['E07','施工中','','纜線不得壓損，進出纜線固定良好、結線牢固'],
+    ['E07','施工中','','端子台接點正確，未投入的接點確實隔離'],
+    ['E07','施工中','','雙系統光電轉換器獨立設置，各自配置無熔絲開關'],
+
+    ['E08','施工前','★','經會勘確認拆收項目，完成噴漆標記並建立拆收清冊，與現場圖相符'],
+    ['E08','施工中','','確認拆除纜線正確且已無帶電，依會勘方式分段收存'],
+    ['E08','施工中','★','器具箱拆收：確認設備正確，吊掛時避免損傷'],
+    ['E08','施工中','★','道旁設備拆收：確認設備正確，吊掛時避免損傷'],
+    ['E08','施工中','★','機房設備拆收：確認設備正確，吊掛時避免損傷'],
+    ['E08','施工中','★','拆收範圍、數量詳實記錄（含纜線拆收長度）'],
+
+    ['E09','施工前','','經現場會勘確認計軸點位置，施工圖說已核定'],
+    ['E09','施工中','','計軸固定架水平氣泡居中'],
+    ['E09','施工中','','計軸頭與固定架連接螺栓依規定扭力鎖固'],
+    ['E09','施工中','','計軸頭與軌面高度間距在規定範圍，調整螺栓依規定扭力鎖固'],
+    ['E09','施工中','','計軸頭與鋼軌深度間距在規定範圍，調整螺栓依規定扭力鎖固'],
+    ['E09','施工中','','計軸固定架與鋼軌連接螺栓依規定扭力鎖固'],
+    ['E09','施工中','','計軸頭與鋼軌平行'],
+    ['E09','施工中','★','兩組系統（SYS1、SYS2）計軸頭電壓在規定範圍並記錄'],
+    ['E09','施工後','※','現場清理，道旁暫存物品不得妨礙正線營運'],
+
+    ['E10','施工前','★','設備規格、型式與規範相符'],
+    ['E10','施工中','','計軸系統機櫃固定完成'],
+    ['E10','施工中','','電源供應、評估、輸入輸出、通訊、過電壓保護各電路板型號與數量核對'],
+    ['E10','施工中','','進出纜線固定，結線以標籤標示、字碼朝外'],
+    ['E10','施工中','','接地線連結完成，機房接地電阻符合規定並記錄'],
+
+    ['E11','施工前','★','設備進場吊裝：吊裝人員與機具證照齊備'],
+    ['E11','施工前','','經現場會勘確認安裝位置，施工圖說已核定'],
+    ['E11','施工中','','警報裝置標示牌、閃光燈安裝完成'],
+    ['E11','施工中','★','警音喇叭及閃光燈功能正常'],
+    ['E11','施工中','','小型列車方向指示器安裝完成'],
+    ['E11','施工中','★','資訊可變式（大型）列車方向指示器安裝完成'],
+    ['E11','施工中','','路線封鎖按鈕安裝完成，原則裝設於入口側'],
+    ['E11','施工中','','緊急按鈕箱、防護無線電天線與主機、緊急告警控制箱安裝完成'],
+    ['E11','施工中','★','平交道告警燈及語音喇叭功能正常'],
+    ['E11','施工中','','平交道集中監視裝置安裝完成'],
+    ['E11','施工中','','遮斷機安裝完成，遮斷桿長度與道路寬度相符'],
+    ['E11','施工中','','遮斷機具上升位置維持鎖'],
+    ['E11','施工中','','遮斷桿垂直時尖端離地高度符合規定或依現場調整'],
+    ['E11','施工中','','自動障礙物偵測系統（紅外線或雷達式）安裝完成'],
+    ['E11','施工中','','號誌用鎖上鎖，纜線固定並標示，接地電阻記錄'],
+    ['E11','施工後','※','現場清理，道旁暫存物品不得妨礙正線營運'],
+
+    ['E12','施工前','','經現場會勘確認佈放路徑'],
+    ['E12','施工中','','電纜規格（線徑、芯數）核對記錄'],
+    ['E12','施工中','','纜線芯數依順序整理，不可刮傷、扭結'],
+    ['E12','施工中','★','絕緣電阻試驗達規定值'],
+    ['E12','施工中','★','導通電阻依各線徑規定值量測合格'],
+    ['E12','施工中','','纜線置於線槽內、以保護管包覆或其他方式防護'],
+    ['E12','施工中','','未結線的纜線頭安裝保護套'],
+
+    ['E13','施工前','','經現場會勘確認佈放路徑'],
+    ['E13','施工中','','光纜芯數規格核對'],
+    ['E13','施工中','★','光纜測試總損失在規定值以內，附區間光損測試表'],
+    ['E13','施工中','','光纖結線收容至收容盤（ODF）'],
+    ['E13','施工中','','纜線置於線槽內或以保護管防護，進出纜線固定'],
+
+    ['E14','施工前','★','設備材質、規格型式與規範相符'],
+    ['E14','施工中','★','影像分析模組安裝完成'],
+    ['E14','施工中','','螢幕、數位錄影主機、磁碟陣列、中央管理主機安裝完成'],
+    ['E14','施工中','','標準 19 吋機櫃（含固定座、排插、散熱風扇）安裝完成'],
+    ['E14','施工中','★','攝影機安裝完成（全景、槍型、球型）'],
+    ['E14','施工中','','網路交換器、光電交換器安裝完成'],
+    ['E14','施工中','','不斷電系統安裝穩固並符合圖說'],
+    ['E14','施工中','','纜線固定並標示，機櫃接地完成'],
+
+    ['E15','施工中','','鋼構維修平台安裝穩固'],
+    ['E15','施工中','','護欄、維修爬梯、護籠組立牢固'],
+    ['E15','施工中','★','護籠與軌道中心保持規定距離，不妨礙建築界限'],
+
+    ['E16','施工前','','經現場會勘確認基礎位置'],
+    ['E16','施工中','★','基礎與軌道中心保持足夠淨空距離（號誌機基礎、器具箱基礎分別依規定）'],
+    ['E16','施工中','','已預留纜線進入位置及路徑'],
+    ['E16','施工中','★','預鑄基礎維持水平，水平尺氣泡居中'],
+    ['E16','施工中','','模板組立尺寸與支撐間距量測記錄'],
+    ['E16','施工中','★','模板接縫密合，不漏漿'],
+    ['E16','施工中','★','混凝土自拌合至澆置時間在規定時限內'],
+    ['E16','施工中','','混凝土氯離子含量、坍度符合規定'],
+    ['E16','施工中','','混凝土養護天數符合規定，表面無蜂窩、冷縫、龜裂'],
+    ['E16','施工中','★','鋼構平台尺寸量測記錄'],
+    ['E16','施工中','★','鋼構平台組立穩固並維持水平'],
+    ['E16','施工中','','護欄裝設尺寸量測記錄'],
+
+    ['E17','施工前','','經現場會勘確認線槽路徑'],
+    ['E17','施工中','','水泥線槽無裂縫、無鋼筋裸露、表面無缺損'],
+    ['E17','施工中','','線槽規格及尺寸（長、寬、高、內寬）核對'],
+    ['E17','施工中','★','槽蓋放置無傾倒之虞，且不妨礙行車'],
+
+    ['S01','安全','','作業區依規定設置隔離設施及警告標示'],
+    ['S01','安全','','人員穿戴安全帽、反光背心、安全鞋等個人防護具'],
+    ['S01','安全','','路線內作業已申請路線封鎖或派員擔任列車瞭望'],
+    ['S01','安全','','開挖四周設置警告標示，深開挖設擋土及上下設備'],
+    ['S01','安全','','高處作業設置護欄或使用安全帶'],
+    ['S01','安全','','電氣作業確認斷電、掛牌上鎖並驗電'],
+    ['S01','安全','','吊掛作業設置管制區，吊具及鋼索檢查合格'],
+    ['S01','安全','','機具設備定期檢查，有檢查標示'],
+    ['S01','安全','','材料堆置穩固，不侵入建築界限'],
+    ['S01','安全','','夜間作業照明充足'],
+    ['S01','安全','','現場備有滅火器、急救用品'],
+    ['S01','安全','','每日施工前實施危害告知與工具箱會議']
+  ];
+  var catName = {}; CATS.forEach(function (c) { catName[c[0]] = c[1]; });
+  var $ = function (id) { return document.getElementById(id); };
+  var sel = $('f-cat');
+  sel.innerHTML = '<option value="">全部分項工程</option>' + CATS.map(function (c) { return '<option value="' + c[0] + '">' + c[0] + ' ' + c[1] + '</option>'; }).join('');
+  var tb = document.querySelector('#list tbody');
+  function esc(s) { return s.replace(/[&<>]/g, function (m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]; }); }
+  function draw() {
+    var q = $('q').value.trim(), c = sel.value, p = $('f-ph').value, m = $('f-mk').value;
+    var rows = D.filter(function (r) {
+      return (!c || r[0] === c) && (!p || r[1] === p) && (!m || r[2] === m) && (!q || (r[3] + catName[r[0]]).indexOf(q) >= 0);
+    });
+    tb.innerHTML = rows.map(function (r) {
+      var mk = r[2] === '★' ? '<span class="tag red">★ 停留點</span>' : r[2] === '※' ? '<span class="tag yellow">※ 安衛</span>' : '';
+      return '<tr class="' + (r[2] === '★' ? 'hp-row' : '') + '"><td class="mono">' + r[0] + '</td><td>' + catName[r[0]] + '</td><td><span class="ph-pill">' + r[1] + '</span></td><td>' + esc(r[3]) + '</td><td>' + mk + '</td></tr>';
+    }).join('');
+    $('empty').hidden = rows.length > 0;
+    var hp = rows.filter(function (r) { return r[2] === '★'; }).length, sf = rows.filter(function (r) { return r[2] === '※'; }).length;
+    $('count').innerHTML = '<span>顯示 <b>' + rows.length + '</b> / ' + D.length + ' 項</span><span>★ 停留點 <b>' + hp + '</b></span><span>※ 安衛查驗點 <b>' + sf + '</b></span>';
+  }
+  ['q', 'f-cat', 'f-ph', 'f-mk'].forEach(function (id) { $(id).addEventListener('input', draw); });
+  var h = (location.hash || '').slice(1);
+  if (catName[h]) { sel.value = h; setTimeout(function () { $('checklist').scrollIntoView(); }, 50); }
+  draw();
+})();
+</script>
+
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <span>鐵路號誌連鎖 · 工程技術參考網站</span>
+    <span>內容為通用技術說明，實際數值與程序以各工程契約規範、設計圖說及設備製造商手冊為準。</span>
+  </div>
+</footer>
+</div>
+<script>
+(function () {
+  var b = document.getElementById('menu-btn'), n = document.getElementById('site-nav');
+  b.addEventListener('click', function () {
+    var o = n.classList.toggle('open'); b.setAttribute('aria-expanded', o);
+  });
+})();
+</script>
+</body>
+</html>

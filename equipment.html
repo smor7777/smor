@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>現場設備｜鐵路號誌連鎖</title>
+<meta name="description" content="號誌機、電動轉轍器、計軸器與平交道防護設備的構造、連鎖關係與施工要點。">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div style="--lamp:var(--yellow)">
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="鐵路號誌連鎖 首頁">
+      <span class="brand-head" aria-hidden="true"><i class="on-r"></i><i></i><i></i></span>
+      <span>鐵路號誌連鎖<small>RAILWAY INTERLOCKING</small></span>
+    </a>
+    <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="site-nav">選單</button>
+    <nav class="nav" id="site-nav" aria-label="主要導覽">
+        <a href="index.html">首頁</a>
+        <a href="equipment.html" aria-current="page">現場設備</a>
+        <a href="inspection.html">施工與檢查</a>
+        <a href="glossary.html">名詞解釋</a>
+    </nav>
+  </div>
+</header>
+<main>
+<style>
+.eq-layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 48px; }
+.eq-side { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px); align-self: start; padding-top: 56px; }
+.eq-side ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; border-left: 1px solid var(--line); }
+.eq-side a { display: block; padding: 8px 16px; text-decoration: none; color: var(--muted); font-size: 15px; margin-left: -1px; border-left: 2px solid transparent; }
+.eq-side a:hover, .eq-side a.on { color: var(--fg); border-left-color: var(--yellow); }
+.eq-side small { display: block; font-family: var(--font-label); letter-spacing: .12em; font-size: 12px; color: var(--dim); }
+@media (max-width: 900px) {
+  .eq-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .eq-side { position: static; padding-top: 24px; }
+  .eq-side ol { display: flex; flex-wrap: wrap; border-left: 0; gap: 8px; }
+  .eq-side a { border: 1px solid var(--line-2); border-radius: 999px; padding: 4px 14px; margin: 0; }
+  .eq-side small { display: none; }
+}
+.eq { padding-block: 56px; border-bottom: 1px solid var(--line); scroll-margin-top: 70px; }
+.eq:last-child { border-bottom: 0; }
+.eq-head { display: grid; gap: 8px; margin-bottom: 28px; }
+.eq-head h2 { font-size: clamp(26px, 3.4vw, 36px); }
+.eq-head p { color: var(--muted); max-width: 44em; font-size: 16.5px; }
+.eq h3.sub { font-family: var(--font-label); font-weight: 600; letter-spacing: .16em; font-size: 14px; color: var(--yellow); margin: 32px 0 14px; text-transform: uppercase; }
+.parts td:first-child { white-space: nowrap; color: var(--fg); font-weight: 500; }
+.parts td { color: var(--muted); }
+.link-out { display: inline-flex; gap: 8px; margin-top: 18px; font-size: 15px; color: var(--yellow); text-decoration: none; border-bottom: 1px solid rgba(244,181,46,.4); }
+.link-out:hover { border-bottom-color: var(--yellow); }
+
+/* 號誌現示 */
+.aspects { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.aspect { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 12px; display: grid; justify-items: center; gap: 12px; text-align: center; }
+.head { background: #05080a; border: 1px solid #2a343b; border-radius: 14px; padding: 8px; display: grid; gap: 7px; }
+.head .lamp { width: 22px; height: 22px; }
+.aspect b { font-size: 17px; }
+.aspect span { font-size: 13px; color: var(--muted); line-height: 1.5; }
+@media (max-width: 760px) { .aspects { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 440px) { .aspects { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* 轉轍器動作順序 */
+.seq { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; counter-reset: s; }
+.seq > div { padding: 20px; background: var(--panel); border-right: 1px solid var(--line); position: relative; min-width: 0; }
+.seq > div:last-child { border-right: 0; }
+.seq .n { font-family: var(--font-label); font-weight: 700; font-size: 13px; letter-spacing: .14em; color: var(--yellow); }
+.seq h4 { font-size: 18px; margin: 6px 0 8px; }
+.seq p { font-size: 14.5px; color: var(--muted); }
+@media (max-width: 860px) { .seq { grid-template-columns: 1fr 1fr; } .seq > div:nth-child(2) { border-right: 0; } .seq > div:nth-child(-n+2) { border-bottom: 1px solid var(--line); } }
+@media (max-width: 480px) { .seq { grid-template-columns: 1fr; } .seq > div { border-right: 0; border-bottom: 1px solid var(--line); } }
+
+.fig { background: #080b0d; border: 1px solid var(--line); border-radius: var(--radius); overflow-x: auto; }
+.fig svg { display: block; width: 100%; min-width: 640px; height: auto; }
+.fig-cap { font-size: 13px; color: var(--dim); margin-top: 8px; }
+.f-rail { stroke: #4a5862; stroke-width: 4; }
+.f-txt { fill: #8f9aa1; font: 13px var(--font-body); }
+.f-lbl { fill: #e4e8e3; font: 600 14px var(--font-body); }
+.f-mono { fill: #8f9aa1; font: 12px var(--font-mono); }
+</style>
+
+<header class="page-head">
+  <div class="wrap">
+    <div class="eyebrow">FIELD EQUIPMENT</div>
+    <h1>現場設備</h1>
+    <p class="lede">連鎖裝置在機房內做判斷，真正「動手」與「看見」的是軌旁設備。號誌機是連鎖的輸出，轉轍器同時是輸出也是輸入，計軸器提供列車位置，平交道防護設備則把連鎖延伸到道路交會處。</p>
+  </div>
+</header>
+
+<div class="wrap eq-layout">
+  <aside class="eq-side" aria-label="設備目錄">
+    <ol>
+      <li><a href="#signal"><small>SIGNAL</small>號誌機</a></li>
+      <li><a href="#point"><small>POINT MACHINE</small>電動轉轍器</a></li>
+      <li><a href="#axle"><small>AXLE COUNTER</small>計軸器</a></li>
+      <li><a href="#crossing"><small>LEVEL CROSSING</small>平交道防護</a></li>
+    </ol>
+  </aside>
+
+  <div>
+    <!-- 號誌機 -->
+    <section class="eq" id="signal">
+      <div class="eq-head">
+        <span class="kicker">SIGNAL · 連鎖的輸出</span>
+        <h2>號誌機</h2>
+        <p>以燈色組合（現示）告訴司機前方進路是否可進入、應以何種速度運轉。號誌機本身不做判斷，亮哪一個燈完全由連鎖裝置依進路與前方號誌狀態決定。</p>
+      </div>
+
+      <h3 class="sub">常見種類</h3>
+      <div class="table-wrap">
+        <table class="parts">
+          <thead><tr><th>種類</th><th>設置位置</th><th>功能</th></tr></thead>
+          <tbody>
+            <tr><td>進站號誌機</td><td>車站入口</td><td>防護站內進路，指示列車可否進站及進入哪一股道</td></tr>
+            <tr><td>出發號誌機</td><td>各股道出站端</td><td>防護出站進路與前方閉塞區間</td></tr>
+            <tr><td>閉塞號誌機</td><td>站間各閉塞區間入口</td><td>自動閉塞區間依前方區間有無列車自動變換現示</td></tr>
+            <tr><td>遠方／中繼號誌機</td><td>主號誌機外方</td><td>預告或重複主號誌現示，補足視認距離</td></tr>
+            <tr><td>調車號誌機</td><td>站內、調車場</td><td>指示調車進路，不用於正線列車運轉</td></tr>
+            <tr><td>進路表示器</td><td>附掛於主號誌機</td><td>表示開通的進路方向或股道</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sub">典型五現示</h3>
+      <div class="aspects">
+        <div class="aspect"><div class="head"><i class="lamp g"></i></div><b>進行</b><span>前方至少兩個區間無列車</span></div>
+        <div class="aspect"><div class="head"><i class="lamp y"></i><i class="lamp g"></i></div><b>減速</b><span>前方號誌為注意，應減速</span></div>
+        <div class="aspect"><div class="head"><i class="lamp y"></i></div><b>注意</b><span>前方號誌為停止，準備停車</span></div>
+        <div class="aspect"><div class="head"><i class="lamp y"></i><i class="lamp y"></i></div><b>警戒</b><span>前方停止點距離短，以低速運轉</span></div>
+        <div class="aspect"><div class="head"><i class="lamp r"></i></div><b>停止</b><span>不得越過號誌機</span></div>
+      </div>
+      <p class="fig-cap">圖只畫出點亮的燈色。實際燈數、排列與速度限制，依各鐵路機構的號誌規章及號誌機型式而定。</p>
+
+      <div class="grid-2" style="margin-top:28px">
+        <div class="panel"><h3>與連鎖的關係</h3><ul class="ticks">
+          <li>號誌開放須滿足連鎖表列出的全部條件：轉轍器表示、軌道無佔用、敵對號誌停止。</li>
+          <li><strong>燈絲／LED 斷線檢知</strong>：停止燈故障時，外方號誌必須保持停止或降級，避免司機看到「暗燈」。</li>
+          <li>號誌開放後，進路內區段一旦被佔用，號誌自動恢復停止（號誌自動復歸）。</li>
+          <li>現示資訊同時送往 ATP 地上設備，作為列車速度監督的依據。</li>
+        </ul></div>
+        <div class="panel"><h3>施工注意</h3><ul class="ticks">
+          <li>安裝位置須符合建築界限，與軌道中心的距離依矮型、中型、高型機型規定量測確認。</li>
+          <li>機柱及配件以扭力扳手鎖固到規定值並記錄。</li>
+          <li>核對 LED 燈色與數量、號誌機編號噴漆、號誌用鎖上鎖。</li>
+          <li>附屬標誌（出發反應標誌、調車區界標、標示牌）一併安裝。</li>
+          <li>接地完成並量測接地電阻；結線標籤字碼朝外。</li>
+          <li>完成後實際到司機位置確認視認距離無遮蔽。</li>
+        </ul></div>
+      </div>
+      <a class="link-out" href="inspection.html#E06">查看號誌機檢查要點 →</a>
+    </section>
+
+    <!-- 轉轍器 -->
+    <section class="eq" id="point">
+      <div class="eq-head">
+        <span class="kicker">POINT MACHINE · 輸出也是輸入</span>
+        <h2>電動轉轍器</h2>
+        <p>驅動尖軌在定位與反位之間轉換，並在轉換完成後把尖軌機械鎖住。它同時回報尖軌的實際位置（表示），是連鎖判斷號誌能否開放最重要的輸入之一。</p>
+      </div>
+
+      <h3 class="sub">一次轉換的動作順序</h3>
+      <div class="seq">
+        <div><span class="n">STEP 1</span><h4>解鎖</h4><p>連鎖確認轉轍器未被鎖閉、區段無車，送出轉換指令；機內先退出鎖錠桿的鎖塊，同時切斷原位置的表示。</p></div>
+        <div><span class="n">STEP 2</span><h4>轉換</h4><p>電動機經減速機構帶動動作桿，推動尖軌離開原基本軌、移向另一側。摩擦連接器防止尖軌受阻時過載。</p></div>
+        <div><span class="n">STEP 3</span><h4>鎖錠</h4><p>尖軌與基本軌密貼後，鎖錠桿的缺口對正，鎖塊落入，把尖軌機械鎖住。</p></div>
+        <div><span class="n">STEP 4</span><h4>表示</h4><p>表示桿確認尖軌確實到位，表示接點閉合，送出「定位」或「反位」表示給連鎖。</p></div>
+      </div>
+
+      <h3 class="sub">主要構件</h3>
+      <div class="table-wrap">
+        <table class="parts">
+          <thead><tr><th>構件</th><th>作用</th></tr></thead>
+          <tbody>
+            <tr><td>電動機、減速機構</td><td>提供轉換動力；摩擦連接器在尖軌受阻時打滑，保護機構與馬達</td></tr>
+            <tr><td>動作桿</td><td>連接尖軌，把機內的直線運動傳到尖軌</td></tr>
+            <tr><td>鎖錠桿</td><td>隨尖軌移動，到位時讓鎖塊插入，完成機械鎖錠</td></tr>
+            <tr><td>表示桿、表示接點</td><td>獨立檢知尖軌實際位置，送出定位／反位表示</td></tr>
+            <tr><td>就地扳轉開關、手搖把</td><td>維修或故障時於現場操作；使用時須切離遠端控制</td></tr>
+            <tr><td>尖軌鎖定器、號誌用鎖</td><td>施工或故障時以機械方式固定尖軌，並防止未授權開啟</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid-2" style="margin-top:28px">
+        <div class="panel"><h3>與連鎖的關係</h3><ul class="ticks">
+          <li>轉轍器所在區段有車，或被已建立的進路鎖閉時，連鎖拒絕轉換指令。</li>
+          <li><strong>表示</strong>是號誌開放條件：失去表示（例如道碴夾入尖軌、密貼不良），號誌立即恢復停止並發出警報。</li>
+          <li>轉換逾時未得到表示，連鎖判定轉轍器故障，不會自行重試到開放號誌。</li>
+          <li>側面防護常以轉轍器轉向安全方向達成，因此一組轉轍器可能同時被多條進路需要。</li>
+        </ul></div>
+        <div class="panel"><h3>施工注意</h3><ul class="ticks">
+          <li>本體固定螺栓以扭力扳手鎖固到規定值；安裝位置與軌道中心保持規定距離。</li>
+          <li>動作桿、鎖錠桿依鋼軌種類（如 50kg、60kg）選用並固定；開口銷安裝後扳開並折彎到位。</li>
+          <li><strong>密貼測試</strong>：在尖軌與基本軌間夾入規定厚度的測試片，薄片仍能鎖錠、厚片必須不能鎖錠（常見判定為 3mm 可鎖錠、5mm 不可鎖錠，以契約規範為準）。</li>
+          <li>就地扳轉開關、尖軌鎖定器與號誌用鎖確實上鎖；轉轍器編號噴漆。</li>
+          <li>配線套號碼標籤，接地完成並記錄接地電阻。</li>
+        </ul></div>
+      </div>
+      <a class="link-out" href="inspection.html#E05">查看電動轉轍器檢查要點 →</a>
+    </section>
+
+    <!-- 計軸器 -->
+    <section class="eq" id="axle">
+      <div class="eq-head">
+        <span class="kicker">AXLE COUNTER · 列車偵測</span>
+        <h2>計軸器</h2>
+        <p>在區段兩端設置計軸點，計算駛入與駛出的車軸數。兩邊數量相同時判定區段無車，不同即為佔用。它取代或補充軌道電路，負責告訴連鎖「列車在哪裡」。</p>
+      </div>
+
+      <div class="fig">
+        <svg viewBox="0 0 900 230" role="img" aria-label="計軸原理圖：區段兩端各一個計軸點，駛入 8 軸、駛出 8 軸時判定無車">
+          <line class="f-rail" x1="30" y1="120" x2="870" y2="120"/>
+          <rect x="230" y="104" width="440" height="32" fill="rgba(53,194,126,.10)"/>
+          <text class="f-mono" x="415" y="96">計軸區段 xxT</text>
+          <!-- 計軸點 A -->
+          <g><rect x="214" y="126" width="12" height="20" rx="2" fill="var(--yellow)"/><rect x="234" y="126" width="12" height="20" rx="2" fill="var(--yellow)"/>
+            <text class="f-lbl" x="196" y="172">計軸點 A</text><text class="f-txt" x="174" y="192">兩組感測頭 SYS1／SYS2</text></g>
+          <!-- 計軸點 B -->
+          <g><rect x="654" y="126" width="12" height="20" rx="2" fill="var(--yellow)"/><rect x="674" y="126" width="12" height="20" rx="2" fill="var(--yellow)"/>
+            <text class="f-lbl" x="636" y="172">計軸點 B</text><text class="f-txt" x="620" y="192">依感測順序判斷方向</text></g>
+          <!-- 列車 -->
+          <g><rect x="40" y="70" width="140" height="38" rx="6" fill="#2a343b"/>
+            <circle cx="62" cy="114" r="7" fill="#8f9aa1"/><circle cx="84" cy="114" r="7" fill="#8f9aa1"/><circle cx="136" cy="114" r="7" fill="#8f9aa1"/><circle cx="158" cy="114" r="7" fill="#8f9aa1"/>
+            <text class="f-txt" x="62" y="94" style="fill:#e4e8e3">列車 →</text></g>
+          <!-- 評估器 -->
+          <rect x="340" y="10" width="220" height="56" rx="6" fill="#131a1f" stroke="#33424d"/>
+          <text class="f-lbl" x="398" y="34">計軸評估器</text>
+          <text class="f-mono" x="358" y="54">IN 8 · OUT 8 → 無車</text>
+          <path d="M230 126 V80 H340" fill="none" stroke="#33424d" stroke-dasharray="4 4"/>
+          <path d="M670 126 V80 H560" fill="none" stroke="#33424d" stroke-dasharray="4 4"/>
+        </svg>
+      </div>
+      <p class="fig-cap">每個計軸點有兩組相錯位置的感測頭，車輪輪緣先後通過的順序即可判斷行駛方向。</p>
+
+      <div class="grid-2" style="margin-top:28px">
+        <div class="panel"><h3>與連鎖的關係</h3><ul class="ticks">
+          <li>區段佔用／無車狀態直接作為進路鎖閉、號誌開放、轉轍器鎖閉的條件。</li>
+          <li>任何故障（感測頭失效、通訊中斷、計數不一致）一律判定為佔用，偏向安全。</li>
+          <li><strong>復位</strong>：受干擾後須依程序復位。預備復位要等一列車完整通過（掃描）且計數一致才恢復無車；直接復位則需人員確認區段確實無車，並有紀錄。</li>
+          <li>和軌道電路相比，不受道碴阻抗、軌面鏽蝕影響，但無法檢知斷軌。</li>
+        </ul></div>
+        <div class="panel"><h3>施工注意</h3><ul class="ticks">
+          <li>計軸頭裝在鋼軌軌腹，避開鋼軌接頭與焊道，計軸頭與鋼軌須保持平行，固定架水平氣泡居中。</li>
+          <li>計軸頭與軌面的高度間距、與軌腹的深度間距調整到製造商規定範圍，所有螺栓依規定扭力鎖固。</li>
+          <li>兩組系統（SYS1、SYS2）分別量測計軸頭電壓，確認在規定範圍並記錄。</li>
+          <li>室內評估器機櫃確認各電路板型號、數量，電源與過電壓保護完成；機房接地電阻符合規定。</li>
+        </ul></div>
+      </div>
+      <a class="link-out" href="inspection.html#E09">查看計軸系統檢查要點 →</a>
+    </section>
+
+    <!-- 平交道 -->
+    <section class="eq" id="crossing">
+      <div class="eq-head">
+        <span class="kicker">LEVEL CROSSING · 道路交會</span>
+        <h2>平交道防護設備</h2>
+        <p>在列車接近時對道路用路人發出警報並放下遮斷桿；反過來，若平交道上有障礙物，也要能及時通知列車停車。</p>
+      </div>
+
+      <h3 class="sub">一次列車通過的動作時序</h3>
+      <div class="fig">
+        <svg viewBox="0 0 900 250" role="img" aria-label="平交道動作時序：列車越過起動點後警報開始，延時後遮斷機下降，列車通過終止點後遮斷機上升、警報停止">
+          <line class="f-rail" x1="30" y1="60" x2="870" y2="60"/>
+          <rect x="560" y="44" width="60" height="32" fill="rgba(244,181,46,.16)" stroke="var(--yellow)" stroke-dasharray="3 3"/>
+          <text class="f-lbl" x="560" y="34">平交道</text>
+          <line x1="140" y1="48" x2="140" y2="72" stroke="var(--green)" stroke-width="3"/><text class="f-txt" x="104" y="96">起動點</text>
+          <line x1="740" y1="48" x2="740" y2="72" stroke="var(--green)" stroke-width="3"/><text class="f-txt" x="712" y="96">終止點</text>
+          <text class="f-mono" x="40" y="40">列車 →</text>
+          <!-- 時序條 -->
+          <text class="f-txt" x="30" y="140">警報（閃光、警音）</text>
+          <rect x="140" y="128" width="600" height="16" rx="3" fill="var(--red)" opacity=".85"/>
+          <text class="f-txt" x="30" y="178">遮斷桿</text>
+          <rect x="230" y="166" width="60" height="16" rx="3" fill="var(--yellow)" opacity=".7"/>
+          <rect x="290" y="166" width="450" height="16" rx="3" fill="var(--yellow)"/>
+          <rect x="740" y="166" width="60" height="16" rx="3" fill="var(--yellow)" opacity=".4"/>
+          <text class="f-mono" x="232" y="204">下降中</text><text class="f-mono" x="460" y="204">遮斷完成</text><text class="f-mono" x="746" y="204">上升</text>
+          <text class="f-txt" x="30" y="236">障礙物偵測</text>
+          <rect x="290" y="224" width="300" height="12" rx="3" fill="#35c27e" opacity=".5"/>
+          <text class="f-mono" x="600" y="234">遮斷後監視平交道內</text>
+          <line x1="140" y1="110" x2="140" y2="240" stroke="#33424d" stroke-dasharray="3 4"/>
+          <line x1="740" y1="110" x2="740" y2="240" stroke="#33424d" stroke-dasharray="3 4"/>
+        </svg>
+      </div>
+      <p class="fig-cap">起動點距離依線路最高速度與法定最低警報時間計算。站內有停車列車時，常改由出發號誌開放來起動警報，避免長時間鳴響。</p>
+
+      <h3 class="sub">設備組成</h3>
+      <div class="table-wrap">
+        <table class="parts">
+          <thead><tr><th>設備</th><th>作用</th></tr></thead>
+          <tbody>
+            <tr><td>警報裝置</td><td>閃光燈、警音喇叭，列車方向指示器（小型或資訊可變式大型）</td></tr>
+            <tr><td>遮斷機</td><td>遮斷桿依道路寬度選用長度，具上升位置維持鎖；停電時遮斷桿可靠重力下降</td></tr>
+            <tr><td>自動障礙物偵測</td><td>紅外線或雷達式，偵測遮斷後仍停留在平交道內的車輛</td></tr>
+            <tr><td>緊急告警設備</td><td>緊急按鈕、告警燈與語音、列車防護無線電，觸發後通知接近列車停車</td></tr>
+            <tr><td>路線封鎖按鈕</td><td>維修或特殊狀況下封鎖平交道，原則裝在入口側</td></tr>
+            <tr><td>集中監視裝置</td><td>將各平交道狀態與故障回傳控制中心</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid-2" style="margin-top:28px">
+        <div class="panel"><h3>與連鎖的關係</h3><ul class="ticks">
+          <li>靠近車站的平交道，可把「平交道已遮斷」納入出發或進站號誌的開放條件。</li>
+          <li>障礙物偵測或緊急按鈕動作時，透過特殊發光號誌或無線電要求列車緊急停車。</li>
+          <li>平交道設備故障時偏向警報、遮斷側，並回報控制中心。</li>
+        </ul></div>
+        <div class="panel"><h3>施工注意</h3><ul class="ticks">
+          <li>閃光燈、警音喇叭、方向指示器安裝完成並做功能測試。</li>
+          <li>遮斷桿長度與現場道路寬度相符；垂直時尖端離地高度依規定或現場調整，上升位置維持鎖作用正常。</li>
+          <li>障礙物偵測涵蓋整個平交道範圍，實際放置測試物驗證。</li>
+          <li>緊急按鈕、告警燈、防護無線電整套連動測試。</li>
+          <li>號誌用鎖上鎖、纜線固定並標示、接地電阻量測記錄。</li>
+        </ul></div>
+      </div>
+      <a class="link-out" href="inspection.html#E11">查看平交道防護設備檢查要點 →</a>
+    </section>
+  </div>
+</div>
+
+<script>
+(function () {
+  var links = [].slice.call(document.querySelectorAll('.eq-side a'));
+  if (!('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (e.isIntersecting) links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id); });
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  document.querySelectorAll('.eq').forEach(function (s) { io.observe(s); });
+})();
+</script>
+
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <span>鐵路號誌連鎖 · 工程技術參考網站</span>
+    <span>內容為通用技術說明，實際數值與程序以各工程契約規範、設計圖說及設備製造商手冊為準。</span>
+  </div>
+</footer>
+</div>
+<script>
+(function () {
+  var b = document.getElementById('menu-btn'), n = document.getElementById('site-nav');
+  b.addEventListener('click', function () {
+    var o = n.classList.toggle('open'); b.setAttribute('aria-expanded', o);
+  });
+})();
+</script>
+</body>
+</html>
