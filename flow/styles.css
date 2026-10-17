@@ -234,3 +234,39 @@ button { font: inherit; }
 .disclaimer { max-width: var(--wrap); margin: 40px auto 0; font-size: 12px; color: var(--ink-500); }
 
 [hidden] { display: none !important; }
+
+/* ── 全站導覽列：與其他頁面 assets/style.css 的 .topbar 相同外觀 ── */
+.topbar {
+  --tb-bg: #0c1013; --tb-panel: #131a1f; --tb-line: #26323b; --tb-line-2: #33424d;
+  --tb-fg: #e4e8e3; --tb-muted: #8f9aa1; --tb-red: #ef4b3f; --tb-lamp: #7AC2EE;
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: rgba(12, 16, 19, .92); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--tb-line);
+  color: var(--tb-fg); font-family: var(--font-sans); font-size: 16px; line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+.topbar__wrap { max-width: 1160px; margin: 0 auto; padding-inline: 20px; display: flex; align-items: center; gap: 24px; min-height: 60px; }
+.topbar a { color: inherit; }
+.topbar :focus-visible { outline: 2px solid #f4b52e; outline-offset: 3px; border-radius: 2px; box-shadow: none; }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; font-weight: 700; letter-spacing: .04em; white-space: nowrap; }
+.brand:hover { color: inherit; }
+.brand-head { display: grid; gap: 3px; padding: 4px; background: #05080a; border: 1px solid var(--tb-line-2); border-radius: 10px; }
+.brand-head i { width: 8px; height: 8px; border-radius: 50%; background: #1d2428; display: block; }
+.brand-head i.on-r { background: var(--tb-red); box-shadow: 0 0 8px var(--tb-red); }
+.brand small { display: block; font-family: "Barlow Condensed", "Noto Sans TC", "Arial Narrow", sans-serif; font-weight: 600; font-size: 11px; letter-spacing: .18em; color: var(--tb-muted); line-height: 1; margin-top: 2px; }
+.site-nav { display: flex; gap: 4px; margin-left: auto; }
+.site-nav a {
+  display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 6px;
+  text-decoration: none; color: var(--tb-muted); font-size: 15px; transition: color .15s, background .15s;
+}
+.site-nav a::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--tb-line-2); transition: background .15s, box-shadow .15s; }
+.site-nav a:hover { color: var(--tb-fg); background: var(--tb-panel); }
+.site-nav a[aria-current="page"] { color: var(--tb-fg); }
+.site-nav a[aria-current="page"]::before { background: var(--tb-lamp); box-shadow: 0 0 8px var(--tb-lamp); }
+.menu-btn { display: none; margin-left: auto; background: none; border: 1px solid var(--tb-line-2); color: var(--tb-fg); border-radius: 6px; padding: 6px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+@media (max-width: 760px) {
+  .menu-btn { display: block; }
+  .site-nav { display: none; position: absolute; left: 0; right: 0; top: 100%; flex-direction: column; background: var(--tb-bg); border-bottom: 1px solid var(--tb-line); padding: 8px 16px 16px; }
+  .site-nav.open { display: flex; }
+  .topbar__wrap { position: relative; }
+}

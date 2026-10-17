@@ -213,3 +213,7 @@ renderMap();
 pickFlow(0);
 $('prev').addEventListener('click', () => select(state.sel - 1));
 $('next').addEventListener('click', () => select(state.sel + 1));
+
+// 全站導覽列：手機版選單開關
+const menuBtn = $('menu-btn'), siteNav = $('site-nav');
+menuBtn.addEventListener('click', () => menuBtn.setAttribute('aria-expanded', String(siteNav.classList.toggle('open'))));
