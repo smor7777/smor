@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>鐵路號誌連鎖工程技術參考</title>
+<meta name="description" content="排列進路、鎖閉與解鎖、自主檢查與 ★ 檢驗停留點的互動流程圖。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%237AC2EE'/%3E%3Ctext x='50' y='64' text-anchor='middle' font-size='34' font-weight='900' fill='%23fff' font-family='sans-serif'%3E連鎖%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700;800;900&family=Barlow+Condensed:wght@600;700;800&display=swap">
+<link rel="preload" as="image" href="assets/train-hero.jpg">
+<link rel="stylesheet" href="styles.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+<div class="page">
+  <section class="hero" aria-label="主視覺">
+    <img class="hero__img" src="assets/train-hero.jpg" alt="集集站月台與彩繪列車">
+    <div class="hero__shade"></div>
+    <div class="hero__copy">
+      <div class="hero__kicker caps">RAILWAY SIGNALLING · INTERLOCKING</div>
+      <h1 class="hero__title">鐵路號誌連鎖工程<br>技術參考</h1>
+      <p class="hero__tagline">讓每一班列車，都走在被確認過的進路上。</p>
+    </div>
+    <div class="station">
+      <span class="station__dot"></span>
+      <span class="station__name">集集站</span>
+      <span class="station__en">JIJI</span>
+    </div>
+  </section>
+
+  <section class="livery" aria-labelledby="livery-title">
+    <div class="livery__head">
+      <h2 class="livery__title" id="livery-title">今日特殊塗裝</h2>
+      <span class="livery__date caps">SPECIAL LIVERY · <span id="today"></span></span>
+    </div>
+    <div class="livery__grid" id="livery-grid">
+      <figure class="livery__card">
+        <div class="livery__frame"><img src="assets/train-hero.jpg" alt="集集線彩繪列車"></div>
+        <figcaption>集集線彩繪列車</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <header class="flow-head">
+    <div class="flow-head__kicker caps" id="flow-kicker"></div>
+    <h1 class="flow-head__title" id="flow-title"></h1>
+    <p class="flow-head__desc" id="flow-desc"></p>
+    <nav class="tabs" role="tablist" aria-label="流程圖主題" id="tabs"></nav>
+  </header>
+
+  <div id="flow-view" role="tabpanel">
+    <div class="legend">
+      <div class="legend__item"><span class="legend__sw legend__sw--term"></span>起點／終點</div>
+      <div class="legend__item"><span class="legend__sw legend__sw--check"></span>判斷</div>
+      <div class="legend__item"><span class="legend__sw legend__sw--action"></span>動作</div>
+      <div class="legend__item"><span class="legend__sw legend__sw--no"></span>「否」分支</div>
+    </div>
+    <main class="flow">
+      <section class="flow__steps" id="steps" aria-label="流程步驟"></section>
+      <aside class="panel" aria-live="polite">
+        <div class="panel__idx caps" id="cur-idx"></div>
+        <h2 class="panel__title" id="cur-title"></h2>
+        <p class="panel__desc" id="cur-desc"></p>
+        <div class="panel__note" id="cur-note"></div>
+        <div class="panel__nav">
+          <button class="btn btn--ghost" id="prev" type="button">上一步</button>
+          <button class="btn btn--primary" id="next" type="button">下一步</button>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div id="map-view" role="tabpanel" hidden>
+    <main class="map">
+      <a class="map__home" href="https://smor-ten.vercel.app/index.html" target="_blank" rel="noopener">
+        <div class="map__home-head"><span class="map__home-t">首頁</span><span class="map__home-file">INDEX.HTML</span></div>
+        <div class="map__chips" id="map-home"></div>
+      </a>
+      <div class="map__vline"></div>
+      <div class="map__hline"></div>
+      <div class="map__pages" id="map-pages"></div>
+      <p class="map__foot">各頁頂端導覽列皆可互相切換：首頁 · 現場設備 · 施工與檢查 · 名詞解釋</p>
+    </main>
+  </div>
+
+  <p class="disclaimer">內容為通用技術說明，實際程序以各工程契約規範、設計圖說及設備製造商手冊為準。</p>
+</div>
+</body>
+</html>
